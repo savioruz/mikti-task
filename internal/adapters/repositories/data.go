@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"github.com/savioruz/mikti-task-1/internal/cores/entities"
+	"github.com/savioruz/mikti-task/week-1/internal/cores/entities"
 )
 
 type DataRepository struct {

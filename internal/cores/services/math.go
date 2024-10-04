@@ -1,6 +1,6 @@
 package services
 
-import "github.com/savioruz/mikti-task-1/internal/cores/ports"
+import "github.com/savioruz/mikti-task/week-1/internal/cores/ports"
 
 type MathService struct {
 	MathRepository ports.MathRepository

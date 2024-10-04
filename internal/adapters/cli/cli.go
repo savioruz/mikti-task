@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"github.com/savioruz/mikti-task-1/internal/cores/ports"
+	"github.com/savioruz/mikti-task/week-1/internal/cores/ports"
 )
 
 type CLI struct {

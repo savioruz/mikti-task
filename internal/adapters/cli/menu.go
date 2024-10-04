@@ -3,7 +3,7 @@ package cli
 import (
 	"bufio"
 	"fmt"
-	"github.com/savioruz/mikti-task-1/pkg/constants"
+	"github.com/savioruz/mikti-task/week-1/pkg/constants"
 	"golang.org/x/term"
 	"os"
 	"strings"

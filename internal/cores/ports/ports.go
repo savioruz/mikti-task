@@ -1,6 +1,6 @@
 package ports
 
-import "github.com/savioruz/mikti-task-1/internal/cores/entities"
+import "github.com/savioruz/mikti-task/week-1/internal/cores/entities"
 
 type MathRepository interface {
 	Add(num ...float64) (*float64, error)

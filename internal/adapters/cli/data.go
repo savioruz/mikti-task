@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 	"github.com/google/uuid"
-	toxic "github.com/savioruz/mikti-task-1/pkg/word"
+	toxic "github.com/savioruz/mikti-task/week-1/pkg/word"
 	"strconv"
 	"strings"
 )
