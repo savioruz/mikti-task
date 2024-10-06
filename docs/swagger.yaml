@@ -1,0 +1,237 @@
+basePath: /api/v1
+definitions:
+  models.Message:
+    properties:
+      message:
+        type: string
+    type: object
+  models.PageMetadata:
+    properties:
+      page:
+        type: integer
+      size:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  models.ResponseError:
+    properties:
+      error:
+        type: string
+    type: object
+  models.ResponseSuccess-array_models_TodoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.TodoResponse'
+        type: array
+      message:
+        $ref: '#/definitions/models.Message'
+      paging:
+        $ref: '#/definitions/models.PageMetadata'
+    type: object
+  models.ResponseSuccess-models_TodoResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.TodoResponse'
+      message:
+        $ref: '#/definitions/models.Message'
+      paging:
+        $ref: '#/definitions/models.PageMetadata'
+    type: object
+  models.TodoCreateRequest:
+    properties:
+      title:
+        minLength: 5
+        type: string
+    required:
+    - title
+    type: object
+  models.TodoResponse:
+    properties:
+      completed:
+        type: boolean
+      created_at:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.TodoUpdateRequest:
+    properties:
+      completed:
+        type: boolean
+      title:
+        minLength: 5
+        type: string
+    type: object
+info:
+  contact:
+    email: jakueenak@gmail.com
+    name: API Support
+  description: This is an auto-generated API Docs.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Todo API
+  version: "0.1"
+paths:
+  /todo:
+    get:
+      consumes:
+      - application/json
+      description: List todo
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess-array_models_TodoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: List todo
+      tags:
+      - todo
+    post:
+      consumes:
+      - application/json
+      description: Create a new todo
+      parameters:
+      - description: Todo data
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.TodoCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess-models_TodoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Create a new todo
+      tags:
+      - todo
+  /todo/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete todo
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess-models_TodoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Delete todo
+      tags:
+      - todo
+    get:
+      consumes:
+      - application/json
+      description: Get todo by ID
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess-models_TodoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Get todo by ID
+      tags:
+      - todo
+    put:
+      consumes:
+      - application/json
+      description: Update todo
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Todo data
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.TodoUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess-models_TodoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Update todo
+      tags:
+      - todo
+swagger: "2.0"
