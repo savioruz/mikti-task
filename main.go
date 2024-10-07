@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "github.com/savioruz/mikti-task/week-3/docs"
-	"github.com/savioruz/mikti-task/week-3/internal/config"
+	"github.com/savioruz/mikti-task/tree/week-3/config"
+	_ "github.com/savioruz/mikti-task/tree/week-3/docs"
 )
 
 // @title Todo API
@@ -16,7 +16,7 @@ import (
 // @BasePath /api/v1
 func main() {
 	log := config.NewLogrus()
-	db := config.NewDatabase(log)
+	db := config.NewDatabase(log, "./tmp/todo.db")
 	validate := config.NewValidator()
 	app := config.NewEcho()
 
@@ -26,4 +26,6 @@ func main() {
 		Log:      log,
 		Validate: validate,
 	})
+
+	app.Logger.Fatal(app.Start(":3000"))
 }

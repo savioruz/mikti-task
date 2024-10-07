@@ -1,8 +1,8 @@
 package handler
 
 import (
-	_ "github.com/savioruz/mikti-task/week-3/docs"
-	"github.com/savioruz/mikti-task/week-3/internal/config"
+	"github.com/savioruz/mikti-task/tree/week-3/config"
+	_ "github.com/savioruz/mikti-task/tree/week-3/docs"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ import (
 // @BasePath /api/v1
 func Handler(w http.ResponseWriter, r *http.Request) {
 	log := config.NewLogrus()
-	db := config.NewDatabase(log)
+	db := config.NewDatabase(log, "/tmp/todo.db")
 	validate := config.NewValidator()
 	app := config.NewEcho()
 

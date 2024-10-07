@@ -3,7 +3,7 @@ package route
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/savioruz/mikti-task/week-3/internal/delivery/restful"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/delivery/restful"
 	swagger "github.com/swaggo/echo-swagger"
 )
 

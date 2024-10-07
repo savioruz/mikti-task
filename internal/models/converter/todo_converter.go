@@ -1,8 +1,8 @@
 package converter
 
 import (
-	"github.com/savioruz/mikti-task/week-3/internal/entities"
-	"github.com/savioruz/mikti-task/week-3/internal/models"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/entities"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/models"
 )
 
 func TodoToResponse(todo *entities.Todo) *models.TodoResponse {

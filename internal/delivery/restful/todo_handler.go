@@ -3,8 +3,8 @@ package restful
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/week-3/internal/models"
-	"github.com/savioruz/mikti-task/week-3/internal/usecases"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/models"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/usecases"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )

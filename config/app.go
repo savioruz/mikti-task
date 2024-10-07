@@ -3,10 +3,10 @@ package config
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/week-3/internal/delivery/restful"
-	"github.com/savioruz/mikti-task/week-3/internal/delivery/restful/route"
-	"github.com/savioruz/mikti-task/week-3/internal/repositories"
-	"github.com/savioruz/mikti-task/week-3/internal/usecases"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/delivery/restful"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/delivery/restful/route"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/repositories"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/usecases"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -34,12 +34,6 @@ func Bootstrap(config *BootstrapConfig) {
 		TodoHandler: todoHandler,
 	}
 	routeConfig.Setup()
-
-	err := config.App.Start(":3000")
-	if err != nil {
-		config.Log.Fatalf("failed to start application: %v", err)
-		return
-	}
 
 	config.Log.Info("Application is ready")
 }

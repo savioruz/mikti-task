@@ -1,8 +1,7 @@
 package config
 
 import (
-	"fmt"
-	"github.com/savioruz/mikti-task/week-3/internal/entities"
+	"github.com/savioruz/mikti-task/tree/week-3/internal/entities"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -12,13 +11,10 @@ import (
 )
 
 // NewDatabase creates a new database connection
-func NewDatabase(log *logrus.Logger) *gorm.DB {
-	dbName := "todo.db"
-	dbPath := fmt.Sprintf("./db/%s", dbName)
+func NewDatabase(log *logrus.Logger, path string) *gorm.DB {
+	exec.Command("rm", path)
 
-	exec.Command("rm", dbName)
-
-	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{
 		Logger: logger.New(&logrusWriter{Logger: log}, logger.Config{
 			SlowThreshold:             time.Second * 5,
 			Colorful:                  false,
