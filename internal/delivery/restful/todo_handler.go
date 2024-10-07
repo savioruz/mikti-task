@@ -106,8 +106,6 @@ func (h *TodoHandler) Update(ctx echo.Context) error {
 
 	request := new(models.TodoUpdateRequest)
 	if err := ctx.Bind(request); err != nil {
-		fmt.Printf("request: %v\n", request)
-		fmt.Printf("id: %v\n", id)
 		h.Log.Errorf("failed to bind request body: %v", err)
 		return HandleError(ctx, http.StatusBadRequest, ErrorBindingRequest)
 	}

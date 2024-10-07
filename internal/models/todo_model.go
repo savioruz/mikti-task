@@ -17,8 +17,8 @@ type TodoUpdateIDRequest struct {
 }
 
 type TodoUpdateRequest struct {
-	Title     *string `json:"title,omitempty" validate:"alphanum,min=5"`
-	Completed *bool   `json:"completed,omitempty" validate:"boolean"`
+	Title     *string `json:"title,omitempty" validate:"omitempty,alphanum,min=5"`
+	Completed *bool   `json:"completed,omitempty" validate:"omitempty,boolean"`
 }
 
 type TodoDeleteRequest struct {

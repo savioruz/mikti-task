@@ -64,6 +64,10 @@ func (u *TodoUsecase) Update(ctx context.Context, id *models.TodoUpdateIDRequest
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
+	if request.Completed == nil && request.Title == nil {
+		return nil, errors.New(http.StatusText(http.StatusBadRequest))
+	}
+
 	if err := u.Validate.Struct(id); err != nil {
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
