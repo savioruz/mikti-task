@@ -1,5 +1,16 @@
 basePath: /api/v1
 definitions:
+  models.LoginUserRequest:
+    properties:
+      id:
+        type: string
+      password:
+        maxLength: 100
+        type: string
+    required:
+    - id
+    - password
+    type: object
   models.Message:
     properties:
       message:
@@ -15,6 +26,22 @@ definitions:
         type: integer
       total_pages:
         type: integer
+    type: object
+  models.RegisterUserRequest:
+    properties:
+      id:
+        type: string
+      name:
+        minLength: 5
+        type: string
+      password:
+        maxLength: 100
+        minLength: 8
+        type: string
+    required:
+    - id
+    - name
+    - password
     type: object
   models.ResponseError:
     properties:
@@ -36,6 +63,15 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/models.TodoResponse'
+      message:
+        $ref: '#/definitions/models.Message'
+      paging:
+        $ref: '#/definitions/models.PageMetadata'
+    type: object
+  models.ResponseSuccess-models_UserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.UserResponse'
       message:
         $ref: '#/definitions/models.Message'
       paging:
@@ -68,6 +104,19 @@ definitions:
         type: boolean
       title:
         minLength: 5
+        type: string
+    type: object
+  models.UserResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      token:
+        type: string
+      updated_at:
         type: string
     type: object
 info:
@@ -111,6 +160,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: List todo
       tags:
       - todo
@@ -140,6 +191,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Create a new todo
       tags:
       - todo
@@ -169,6 +222,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Delete todo
       tags:
       - todo
@@ -197,6 +252,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Get todo by ID
       tags:
       - todo
@@ -231,7 +288,76 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Update todo
       tags:
       - todo
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: Register User Request
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess-models_UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Register a new user
+      tags:
+      - User
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user
+      parameters:
+      - description: Login User Request
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess-models_UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Login a user
+      tags:
+      - User
+schemes:
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

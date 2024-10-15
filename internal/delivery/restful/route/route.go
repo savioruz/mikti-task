@@ -8,19 +8,29 @@ import (
 )
 
 type Config struct {
-	App         *echo.Echo
-	TodoHandler *restful.TodoHandler
+	App            *echo.Echo
+	TodoHandler    *restful.TodoHandler
+	UserHandler    *restful.UserHandler
+	AuthMiddleware echo.MiddlewareFunc
 }
 
 func (c *Config) Setup() {
 	c.publicRoutes()
+	c.guestRoutes()
 	c.swaggerRoutes()
 	c.App.Use(middleware.Recover())
+}
+
+func (c *Config) guestRoutes() {
+	g := c.App.Group("/api/v1")
+	g.POST("/users", c.UserHandler.Register)
+	g.POST("/users/login", c.UserHandler.Login)
 }
 
 func (c *Config) publicRoutes() {
 	g := c.App.Group("/api/v1")
 	g.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(30)))
+	g.Use(c.AuthMiddleware)
 	g.POST("/todo", c.TodoHandler.Create)
 	g.GET("/todo", c.TodoHandler.List)
 	g.GET("/todo/:id", c.TodoHandler.GetByID)

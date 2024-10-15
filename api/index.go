@@ -17,8 +17,9 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 func Handler(w http.ResponseWriter, r *http.Request) {
+	viper := config.NewViper()
 	log := config.NewLogrus()
-	db := config.NewDatabase(log, "/tmp/todo.db")
+	db := config.NewDatabase(viper, log)
 	validate := config.NewValidator()
 	app := config.NewEcho()
 

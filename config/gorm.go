@@ -1,20 +1,29 @@
 package config
 
 import (
+	"fmt"
 	"github.com/savioruz/mikti-task/tree/week-3/internal/entities"
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/sqlite"
+	"github.com/spf13/viper"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"os/exec"
 	"time"
 )
 
 // NewDatabase creates a new database connection
-func NewDatabase(log *logrus.Logger, path string) *gorm.DB {
-	exec.Command("rm", path)
+func NewDatabase(viper *viper.Viper, log *logrus.Logger) *gorm.DB {
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=%s",
+		viper.GetString("DB_HOST"),
+		viper.GetString("DB_PORT"),
+		viper.GetString("DB_USER"),
+		viper.GetString("DB_PASSWORD"),
+		viper.GetString("DB_NAME"),
+		viper.GetString("DB_SSL_MODE"),
+		viper.GetString("DB_TIMEZONE"),
+	)
 
-	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.New(&logrusWriter{Logger: log}, logger.Config{
 			SlowThreshold:             time.Second * 5,
 			Colorful:                  false,
@@ -36,7 +45,7 @@ func NewDatabase(log *logrus.Logger, path string) *gorm.DB {
 	connection.SetMaxOpenConns(100)
 	connection.SetConnMaxLifetime(time.Second * time.Duration(300))
 
-	if err := db.AutoMigrate(&entities.Todo{}); err != nil {
+	if err := db.AutoMigrate(&entities.Todo{}, &entities.User{}); err != nil {
 		log.Fatalf("failed to migrate database: %v", err)
 	}
 

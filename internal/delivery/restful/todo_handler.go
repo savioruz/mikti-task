@@ -31,6 +31,7 @@ func NewTodoHandler(log *logrus.Logger, useCase *usecases.TodoUsecase) *TodoHand
 // @Success 201 {object} models.ResponseSuccess[models.TodoResponse]
 // @Failure 400 {object} models.ResponseError
 // @Failure 500 {object} models.ResponseError
+// @security ApiKeyAuth
 // @Router /todo [post]
 func (h *TodoHandler) Create(ctx echo.Context) error {
 	request := new(models.TodoCreateRequest)
@@ -64,6 +65,7 @@ func (h *TodoHandler) Create(ctx echo.Context) error {
 // @Success 200 {object} models.ResponseSuccess[models.TodoResponse]
 // @Failure 400 {object} models.ResponseError
 // @Failure 500 {object} models.ResponseError
+// @security ApiKeyAuth
 // @Router /todo/{id} [get]
 func (h *TodoHandler) GetByID(ctx echo.Context) error {
 	request := new(models.TodoGetRequest)
@@ -98,6 +100,7 @@ func (h *TodoHandler) GetByID(ctx echo.Context) error {
 // @Success 200 {object} models.ResponseSuccess[models.TodoResponse]
 // @Failure 400 {object} models.ResponseError
 // @Failure 500 {object} models.ResponseError
+// @security ApiKeyAuth
 // @Router /todo/{id} [put]
 func (h *TodoHandler) Update(ctx echo.Context) error {
 	id := &models.TodoUpdateIDRequest{
@@ -135,6 +138,7 @@ func (h *TodoHandler) Update(ctx echo.Context) error {
 // @Success 200 {object} models.ResponseSuccess[models.TodoResponse]
 // @Failure 400 {object} models.ResponseError
 // @Failure 500 {object} models.ResponseError
+// @security ApiKeyAuth
 // @Router /todo/{id} [delete]
 func (h *TodoHandler) Delete(ctx echo.Context) error {
 	request := new(models.TodoDeleteRequest)
@@ -172,6 +176,7 @@ func (h *TodoHandler) Delete(ctx echo.Context) error {
 // @Success 200 {object} models.ResponseSuccess[[]models.TodoResponse]
 // @Failure 400 {object} models.ResponseError
 // @Failure 500 {object} models.ResponseError
+// @security ApiKeyAuth
 // @Router /todo [get]
 func (h *TodoHandler) List(ctx echo.Context) error {
 	request := new(models.TodoListRequest)

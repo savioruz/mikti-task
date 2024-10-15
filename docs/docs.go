@@ -25,6 +25,11 @@ const docTemplate = `{
     "paths": {
         "/todo": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "List todo",
                 "consumes": [
                     "application/json"
@@ -72,6 +77,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new todo",
                 "consumes": [
                     "application/json"
@@ -118,6 +128,11 @@ const docTemplate = `{
         },
         "/todo/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get todo by ID",
                 "consumes": [
                     "application/json"
@@ -160,6 +175,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update todo",
                 "consumes": [
                     "application/json"
@@ -211,6 +231,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete todo",
                 "consumes": [
                     "application/json"
@@ -252,9 +277,117 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users": {
+            "post": {
+                "description": "Register a new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "Register User Request",
+                        "name": "register",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RegisterUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseSuccess-models_UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/login": {
+            "post": {
+                "description": "Login a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Login a user",
+                "parameters": [
+                    {
+                        "description": "Login User Request",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseSuccess-models_UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "models.LoginUserRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "password"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 100
+                }
+            }
+        },
         "models.Message": {
             "type": "object",
             "properties": {
@@ -277,6 +410,28 @@ const docTemplate = `{
                 },
                 "total_pages": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.RegisterUserRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 5
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 8
                 }
             }
         },
@@ -310,6 +465,20 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/models.TodoResponse"
+                },
+                "message": {
+                    "$ref": "#/definitions/models.Message"
+                },
+                "paging": {
+                    "$ref": "#/definitions/models.PageMetadata"
+                }
+            }
+        },
+        "models.ResponseSuccess-models_UserResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.UserResponse"
                 },
                 "message": {
                     "$ref": "#/definitions/models.Message"
@@ -362,6 +531,33 @@ const docTemplate = `{
                     "minLength": 5
                 }
             }
+        },
+        "models.UserResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -371,7 +567,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
 	Host:             "",
 	BasePath:         "/api/v1",
-	Schemes:          []string{},
+	Schemes:          []string{"http"},
 	Title:            "Todo API",
 	Description:      "This is an auto-generated API Docs.",
 	InfoInstanceName: "swagger",

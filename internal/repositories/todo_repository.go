@@ -11,10 +11,9 @@ type TodoRepository struct {
 	Log *logrus.Logger
 }
 
-func NewTodoRepository(db *gorm.DB, log *logrus.Logger) *TodoRepository {
+func NewTodoRepository(log *logrus.Logger) *TodoRepository {
 	return &TodoRepository{
-		Repository: Repository[entities.Todo]{DB: db},
-		Log:        log,
+		Log: log,
 	}
 }
 

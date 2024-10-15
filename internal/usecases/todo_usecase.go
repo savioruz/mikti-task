@@ -43,8 +43,6 @@ func (u *TodoUsecase) Create(ctx context.Context, request *models.TodoCreateRequ
 		ID:        uuid.New().String(),
 		Title:     request.Title,
 		Completed: false,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 
 	if err := u.TodoRepository.Create(tx, todo); err != nil {

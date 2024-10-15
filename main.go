@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/savioruz/mikti-task/tree/week-3/config"
 	_ "github.com/savioruz/mikti-task/tree/week-3/docs"
+	"time"
 )
 
 // @title Todo API
@@ -13,12 +15,17 @@ import (
 // @contact.email jakueenak@gmail.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @schemes http
 // @BasePath /api/v1
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
+	viper := config.NewViper()
 	log := config.NewLogrus()
-	db := config.NewDatabase(log, "./tmp/todo.db")
+	db := config.NewDatabase(viper, log)
 	validate := config.NewValidator()
-	app := config.NewEcho()
+	app, log := config.NewEcho()
 
 	config.Bootstrap(&config.BootstrapConfig{
 		DB:       db,
@@ -27,5 +34,12 @@ func main() {
 		Validate: validate,
 	})
 
-	app.Logger.Fatal(app.Start(":3000"))
+	port := viper.GetString("APP_PORT")
+	go func() {
+		if err := app.Start(fmt.Sprintf(":%s", port)); err != nil {
+			log.Fatal("shutting down the server")
+		}
+	}()
+
+	config.GracefulShutdown(app, log, 10*time.Second)
 }
