@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 )
 
@@ -13,7 +14,7 @@ func NewViper() *viper.Viper {
 	v.AutomaticEnv()
 
 	if err := v.ReadInConfig(); err != nil {
-		panic(err)
+		fmt.Println("No .env file found, using environment variables.")
 	}
 
 	return v
