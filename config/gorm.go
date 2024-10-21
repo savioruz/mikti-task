@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/entities"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
@@ -45,9 +44,9 @@ func NewDatabase(viper *viper.Viper, log *logrus.Logger) *gorm.DB {
 	connection.SetMaxOpenConns(100)
 	connection.SetConnMaxLifetime(time.Second * time.Duration(300))
 
-	if err := db.AutoMigrate(&entities.Todo{}, &entities.User{}); err != nil {
-		log.Fatalf("failed to migrate database: %v", err)
-	}
+	//if err := db.AutoMigrate(&entities.Todo{}, &entities.User{}); err != nil {
+	//	log.Fatalf("failed to migrate database: %v", err)
+	//}
 
 	return db
 }
