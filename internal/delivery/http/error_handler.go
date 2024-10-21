@@ -1,9 +1,9 @@
-package restful
+package http
 
 import (
 	"errors"
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/tree/week-3/internal/models"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/models"
 )
 
 var (

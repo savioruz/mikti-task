@@ -3,31 +3,33 @@ package route
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/savioruz/mikti-task/tree/week-3/internal/delivery/restful"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http"
 	swagger "github.com/swaggo/echo-swagger"
 )
 
 type Config struct {
 	App            *echo.Echo
-	TodoHandler    *restful.TodoHandler
-	UserHandler    *restful.UserHandler
+	TodoHandler    *http.TodoHandler
+	UserHandler    *http.UserHandler
 	AuthMiddleware echo.MiddlewareFunc
 }
 
 func (c *Config) Setup() {
 	c.publicRoutes()
-	c.guestRoutes()
+	c.protectedRoutes()
 	c.swaggerRoutes()
 	c.App.Use(middleware.Recover())
 }
 
-func (c *Config) guestRoutes() {
+func (c *Config) publicRoutes() {
 	g := c.App.Group("/api/v1")
+	g.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(30)))
 	g.POST("/users", c.UserHandler.Register)
 	g.POST("/users/login", c.UserHandler.Login)
+	g.POST("/users/refresh", c.UserHandler.Refresh)
 }
 
-func (c *Config) publicRoutes() {
+func (c *Config) protectedRoutes() {
 	g := c.App.Group("/api/v1")
 	g.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(30)))
 	g.Use(c.AuthMiddleware)

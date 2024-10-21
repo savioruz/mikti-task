@@ -9,7 +9,7 @@ type TodoResponse struct {
 }
 
 type TodoCreateRequest struct {
-	Title string `json:"title" validate:"required,alphanum,min=5"`
+	Title string `json:"title" validate:"required,gte=5,lte=255"`
 }
 
 type TodoUpdateIDRequest struct {
@@ -17,7 +17,7 @@ type TodoUpdateIDRequest struct {
 }
 
 type TodoUpdateRequest struct {
-	Title     *string `json:"title,omitempty" validate:"omitempty,alphanum,min=5"`
+	Title     *string `json:"title,omitempty" validate:"omitempty,gte=5,lte=255"`
 	Completed *bool   `json:"completed,omitempty" validate:"omitempty,boolean"`
 }
 

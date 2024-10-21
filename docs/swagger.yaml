@@ -1,14 +1,16 @@
 basePath: /api/v1
 definitions:
-  models.LoginUserRequest:
+  models.LoginRequest:
     properties:
-      id:
+      email:
+        maxLength: 255
         type: string
       password:
-        maxLength: 100
+        maxLength: 255
+        minLength: 8
         type: string
     required:
-    - id
+    - email
     - password
     type: object
   models.Message:
@@ -27,21 +29,31 @@ definitions:
       total_pages:
         type: integer
     type: object
-  models.RegisterUserRequest:
+  models.RefreshTokenRequest:
     properties:
-      id:
-        type: string
-      name:
-        minLength: 5
-        type: string
-      password:
-        maxLength: 100
-        minLength: 8
+      refresh_token:
         type: string
     required:
-    - id
-    - name
+    - refresh_token
+    type: object
+  models.RegisterRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      password:
+        maxLength: 255
+        minLength: 8
+        type: string
+      role:
+        enum:
+        - admin
+        - user
+        type: string
+    required:
+    - email
     - password
+    - role
     type: object
   models.ResponseError:
     properties:
@@ -63,6 +75,15 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/models.TodoResponse'
+      message:
+        $ref: '#/definitions/models.Message'
+      paging:
+        $ref: '#/definitions/models.PageMetadata'
+    type: object
+  models.ResponseSuccess-models_TokenResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.TokenResponse'
       message:
         $ref: '#/definitions/models.Message'
       paging:
@@ -106,16 +127,25 @@ definitions:
         minLength: 5
         type: string
     type: object
+  models.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
   models.UserResponse:
     properties:
       created_at:
         type: string
+      email:
+        type: string
       id:
         type: string
-      name:
+      role:
         type: string
-      token:
-        type: string
+      status:
+        type: integer
       updated_at:
         type: string
     type: object
@@ -299,12 +329,12 @@ paths:
       - application/json
       description: Register a new user
       parameters:
-      - description: Register User Request
+      - description: User data
         in: body
-        name: register
+        name: user
         required: true
         schema:
-          $ref: '#/definitions/models.RegisterUserRequest'
+          $ref: '#/definitions/models.RegisterRequest'
       produces:
       - application/json
       responses:
@@ -322,19 +352,19 @@ paths:
             $ref: '#/definitions/models.ResponseError'
       summary: Register a new user
       tags:
-      - User
+      - user
   /users/login:
     post:
       consumes:
       - application/json
       description: Login a user
       parameters:
-      - description: Login User Request
+      - description: User data
         in: body
-        name: login
+        name: user
         required: true
         schema:
-          $ref: '#/definitions/models.LoginUserRequest'
+          $ref: '#/definitions/models.LoginRequest'
       produces:
       - application/json
       responses:
@@ -352,7 +382,37 @@ paths:
             $ref: '#/definitions/models.ResponseError'
       summary: Login a user
       tags:
-      - User
+      - user
+  /users/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refresh token
+      parameters:
+      - description: Refresh token data
+        in: body
+        name: token
+        required: true
+        schema:
+          $ref: '#/definitions/models.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess-models_TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Refresh token
+      tags:
+      - user
 schemes:
 - http
 securityDefinitions:

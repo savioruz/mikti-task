@@ -5,14 +5,13 @@ import (
 	"errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"github.com/savioruz/mikti-task/tree/week-3/internal/entities"
-	"github.com/savioruz/mikti-task/tree/week-3/internal/models"
-	"github.com/savioruz/mikti-task/tree/week-3/internal/models/converter"
-	"github.com/savioruz/mikti-task/tree/week-3/internal/repositories"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/entities"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/models"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/models/converter"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/repositories"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"net/http"
-	"time"
 )
 
 type TodoUsecase struct {
@@ -80,15 +79,12 @@ func (u *TodoUsecase) Update(ctx context.Context, id *models.TodoUpdateIDRequest
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
-	if request != nil {
-		if request.Title != nil {
-			todo.Title = *request.Title
-		}
-		if request.Completed != nil {
-			todo.Completed = *request.Completed
-		}
+	if request.Title != nil {
+		todo.Title = *request.Title
 	}
-	todo.UpdatedAt = time.Now()
+	if request.Completed != nil {
+		todo.Completed = *request.Completed
+	}
 
 	if err := u.TodoRepository.Update(tx, todo); err != nil {
 		u.Log.Errorf("failed to update todo: %v", err)

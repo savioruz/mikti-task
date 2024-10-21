@@ -1,38 +1,30 @@
 package models
 
 type UserResponse struct {
-	ID        string `json:"id,omitempty"`
-	Name      string `json:"name,omitempty"`
-	Token     string `json:"token,omitempty"`
-	CreatedAt string `json:"created_at,omitempty"`
-	UpdatedAt string `json:"updated_at,omitempty"`
+	ID        string `json:"id"`
+	Email     string `json:"email"`
+	Role      string `json:"role"`
+	Status    int    `json:"status"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
-type VerifyUserRequest struct {
-	Token string `json:"token" validate:"required,max=100"`
+type RegisterRequest struct {
+	Email    string `json:"email" validate:"required,email,lte=255"`
+	Password string `json:"password" validate:"required,gte=8,lte=255"`
+	Role     string `json:"role" validate:"required,oneof=admin user"`
 }
 
-type RegisterUserRequest struct {
-	ID       string `json:"id" validate:"required"`
-	Name     string `json:"name" validate:"required,min=5"`
-	Password string `json:"password" validate:"required,min=8,max=100"`
+type LoginRequest struct {
+	Email    string `json:"email" validate:"required,email,lte=255"`
+	Password string `json:"password" validate:"required,gte=8,lte=255"`
 }
 
-type UpdateUserRequest struct {
-	ID   string `json:"id" validate:"required"`
-	Name string `json:"name,omitempty" validate:"omitempty,min=5"`
-	Pass string `json:"password,omitempty" validate:"omitempty,min=8,max=100"`
+type TokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
-type LoginUserRequest struct {
-	ID       string `json:"id" validate:"required"`
-	Password string `json:"password" validate:"required,max=100"`
-}
-
-type LogoutUserRequest struct {
-	ID string `json:"id" validate:"required,max=100"`
-}
-
-type GetUserRequest struct {
-	ID string `param:"id" validate:"required,max=100"`
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" validate:"required,jwt"`
 }

@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/savioruz/mikti-task/tree/week-3/config"
-	_ "github.com/savioruz/mikti-task/tree/week-3/docs"
+	"github.com/savioruz/mikti-task/tree/week-4/config"
+	_ "github.com/savioruz/mikti-task/tree/week-4/docs"
 	"net/http"
 )
 
@@ -16,18 +16,23 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func Handler(w http.ResponseWriter, r *http.Request) {
 	viper := config.NewViper()
 	log := config.NewLogrus()
 	db := config.NewDatabase(viper, log)
+	jwt := config.NewJWT(viper)
 	validate := config.NewValidator()
-	app := config.NewEcho()
+	app, log := config.NewEcho()
 
 	config.Bootstrap(&config.BootstrapConfig{
 		DB:       db,
 		App:      app,
 		Log:      log,
 		Validate: validate,
+		JWT:      jwt,
 	})
 
 	app.ServeHTTP(w, r)

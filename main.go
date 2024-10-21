@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/savioruz/mikti-task/tree/week-3/config"
-	_ "github.com/savioruz/mikti-task/tree/week-3/docs"
+	"github.com/savioruz/mikti-task/tree/week-4/config"
+	_ "github.com/savioruz/mikti-task/tree/week-4/docs"
 	"time"
 )
 
@@ -24,6 +24,7 @@ func main() {
 	viper := config.NewViper()
 	log := config.NewLogrus()
 	db := config.NewDatabase(viper, log)
+	jwt := config.NewJWT(viper)
 	validate := config.NewValidator()
 	app, log := config.NewEcho()
 
@@ -32,6 +33,7 @@ func main() {
 		App:      app,
 		Log:      log,
 		Validate: validate,
+		JWT:      jwt,
 	})
 
 	port := viper.GetString("APP_PORT")

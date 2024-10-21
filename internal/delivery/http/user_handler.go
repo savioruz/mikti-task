@@ -1,9 +1,9 @@
-package restful
+package http
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/tree/week-3/internal/models"
-	"github.com/savioruz/mikti-task/tree/week-3/internal/usecases"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/models"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/usecases"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -23,16 +23,16 @@ func NewUserHandler(log *logrus.Logger, useCase *usecases.UserUsecase) *UserHand
 // Register function is a handler to register a new user
 // @Summary Register a new user
 // @Description Register a new user
-// @Tags User
+// @Tags user
 // @Accept json
 // @Produce json
-// @Param register body models.RegisterUserRequest true "Register User Request"
+// @Param user body models.RegisterRequest true "User data"
 // @Success 201 {object} models.ResponseSuccess[models.UserResponse]
 // @Failure 400 {object} models.ResponseError
 // @Failure 500 {object} models.ResponseError
 // @Router /users [post]
 func (h *UserHandler) Register(ctx echo.Context) error {
-	request := new(models.RegisterUserRequest)
+	request := new(models.RegisterRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
 		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
@@ -56,16 +56,16 @@ func (h *UserHandler) Register(ctx echo.Context) error {
 // Login function is a handler to login a user
 // @Summary Login a user
 // @Description Login a user
-// @Tags User
+// @Tags user
 // @Accept json
 // @Produce json
-// @Param login body models.LoginUserRequest true "Login User Request"
+// @Param user body models.LoginRequest true "User data"
 // @Success 200 {object} models.ResponseSuccess[models.UserResponse]
 // @Failure 400 {object} models.ResponseError
 // @Failure 500 {object} models.ResponseError
 // @Router /users/login [post]
 func (h *UserHandler) Login(ctx echo.Context) error {
-	request := new(models.LoginUserRequest)
+	request := new(models.LoginRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
 		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
@@ -81,21 +81,32 @@ func (h *UserHandler) Login(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, models.ResponseSuccess[*models.UserResponse]{
+	return ctx.JSON(http.StatusOK, models.ResponseSuccess[*models.TokenResponse]{
 		Data: response,
 	})
 }
 
-func (h *UserHandler) Logout(ctx echo.Context) error {
-	request := new(models.LogoutUserRequest)
+// Refresh function is a handler to refresh token
+// @Summary Refresh token
+// @Description Refresh token
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param token body models.RefreshTokenRequest true "Refresh token data"
+// @Success 200 {object} models.ResponseSuccess[models.TokenResponse]
+// @Failure 400 {object} models.ResponseError
+// @Failure 500 {object} models.ResponseError
+// @Router /users/refresh [post]
+func (h *UserHandler) Refresh(ctx echo.Context) error {
+	request := new(models.RefreshTokenRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
 		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
 	}
 
-	response, err := h.UseCase.Logout(ctx.Request().Context(), request)
+	response, err := h.UseCase.RefreshToken(request)
 	if err != nil {
-		h.Log.Errorf("failed to logout user: %v", err)
+		h.Log.Errorf("failed to refresh token: %v", err)
 		if err.Error() == "Bad Request" {
 			return HandleError(ctx, http.StatusBadRequest, ErrValidation)
 		} else {
@@ -103,5 +114,7 @@ func (h *UserHandler) Logout(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusNoContent, models.ResponseSuccess[bool]{Data: response})
+	return ctx.JSON(http.StatusOK, models.ResponseSuccess[*models.TokenResponse]{
+		Data: response,
+	})
 }

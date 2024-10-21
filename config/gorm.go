@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/savioruz/mikti-task/tree/week-3/internal/entities"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/entities"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
