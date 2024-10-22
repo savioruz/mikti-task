@@ -101,6 +101,7 @@ definitions:
   models.TodoCreateRequest:
     properties:
       title:
+        maxLength: 255
         minLength: 5
         type: string
     required:
@@ -124,6 +125,7 @@ definitions:
       completed:
         type: boolean
       title:
+        maxLength: 255
         minLength: 5
         type: string
     type: object
@@ -413,8 +415,6 @@ paths:
       summary: Refresh token
       tags:
       - user
-schemes:
-- http
 securityDefinitions:
   ApiKeyAuth:
     in: header

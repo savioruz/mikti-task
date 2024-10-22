@@ -15,7 +15,6 @@ import (
 // @contact.email jakueenak@gmail.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @schemes http
 // @BasePath /api/v1
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header

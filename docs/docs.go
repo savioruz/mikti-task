@@ -573,6 +573,7 @@ const docTemplate = `{
             "properties": {
                 "title": {
                     "type": "string",
+                    "maxLength": 255,
                     "minLength": 5
                 }
             }
@@ -605,6 +606,7 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string",
+                    "maxLength": 255,
                     "minLength": 5
                 }
             }
@@ -658,7 +660,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
 	Host:             "",
 	BasePath:         "/api/v1",
-	Schemes:          []string{"http"},
+	Schemes:          []string{},
 	Title:            "Todo API",
 	Description:      "This is an auto-generated API Docs.",
 	InfoInstanceName: "swagger",
