@@ -76,6 +76,8 @@ func (h *UserHandler) Login(ctx echo.Context) error {
 		h.Log.Errorf("failed to login user: %v", err)
 		if err.Error() == "Bad Request" {
 			return HandleError(ctx, http.StatusBadRequest, ErrValidation)
+		} else if err.Error() == "Unauthorized" {
+			return HandleError(ctx, http.StatusUnauthorized, ErrorUnauthorized)
 		} else {
 			return HandleError(ctx, http.StatusInternalServerError, ErrorInternalServer)
 		}

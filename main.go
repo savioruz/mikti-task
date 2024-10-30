@@ -23,12 +23,14 @@ func main() {
 	viper := config.NewViper()
 	log := config.NewLogrus()
 	db := config.NewDatabase(viper, log)
+	redis := config.NewRedisClient(viper, log)
 	jwt := config.NewJWT(viper)
 	validate := config.NewValidator()
 	app, log := config.NewEcho()
 
 	config.Bootstrap(&config.BootstrapConfig{
 		DB:       db,
+		Cache:    redis,
 		App:      app,
 		Log:      log,
 		Validate: validate,

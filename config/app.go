@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/cache"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/auth"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/middleware"
@@ -15,6 +16,7 @@ import (
 
 type BootstrapConfig struct {
 	DB       *gorm.DB
+	Cache    *cache.Cache
 	App      *echo.Echo
 	Log      *logrus.Logger
 	Validate *validator.Validate
@@ -30,7 +32,7 @@ func Bootstrap(config *BootstrapConfig) {
 	jwtService := auth.NewJWTService(config.JWT.JWTSecret, config.JWT.JWTAccessExpiry, config.JWT.JWTRefreshExpiry)
 
 	// Setup usecases
-	todoUsecase := usecases.NewTodoUsecase(config.DB, config.Log, config.Validate, todoRepository)
+	todoUsecase := usecases.NewTodoUsecase(config.DB, config.Cache, config.Log, config.Validate, todoRepository)
 	userUsecase := usecases.NewUserUsecase(config.DB, config.Log, config.Validate, userRepository, jwtService)
 
 	// Setup handlers
