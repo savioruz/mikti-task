@@ -2,3 +2,4 @@
 .env
 .build/
 .vercel
+cover.out

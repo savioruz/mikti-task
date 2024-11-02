@@ -37,7 +37,7 @@ func (h *TodoHandler) Create(ctx echo.Context) error {
 	request := new(models.TodoCreateRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
-		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
+		return HandleError(ctx, http.StatusBadRequest, ErrorBindingRequest)
 	}
 
 	response, err := h.UseCase.Create(ctx.Request().Context(), request)
@@ -71,15 +71,18 @@ func (h *TodoHandler) GetByID(ctx echo.Context) error {
 	request := new(models.TodoGetRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
-		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
+		return HandleError(ctx, http.StatusBadRequest, ErrorBindingRequest)
 	}
 
 	response, err := h.UseCase.Get(ctx.Request().Context(), request)
 	if err != nil {
 		h.Log.Errorf("failed to get todo: %v", err)
-		if err.Error() == "Bad Request" {
+		switch {
+		case err.Error() == "Bad Request":
 			return HandleError(ctx, http.StatusBadRequest, ErrValidation)
-		} else {
+		case err.Error() == "Not Found":
+			return HandleError(ctx, http.StatusNotFound, ErrNotFound)
+		default:
 			return HandleError(ctx, http.StatusInternalServerError, ErrorInternalServer)
 		}
 	}
@@ -144,15 +147,18 @@ func (h *TodoHandler) Delete(ctx echo.Context) error {
 	request := new(models.TodoDeleteRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
-		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
+		return HandleError(ctx, http.StatusBadRequest, ErrorBindingRequest)
 	}
 
 	err := h.UseCase.Delete(ctx.Request().Context(), request)
 	if err != nil {
 		h.Log.Errorf("failed to delete todo: %v", err)
-		if err.Error() == "Bad Request" {
+		switch {
+		case err.Error() == "Bad Request":
 			return HandleError(ctx, http.StatusBadRequest, ErrValidation)
-		} else {
+		case err.Error() == "Not Found":
+			return HandleError(ctx, http.StatusNotFound, ErrNotFound)
+		default:
 			return HandleError(ctx, http.StatusInternalServerError, ErrorInternalServer)
 		}
 	}
@@ -171,8 +177,8 @@ func (h *TodoHandler) Delete(ctx echo.Context) error {
 // @Tags todo
 // @Accept json
 // @Produce json
-// @Param page query int false "Page"
 // @Param limit query int false "Limit"
+// @Param page query int false "Page"
 // @Success 200 {object} models.ResponseSuccess[[]models.TodoResponse]
 // @Failure 400 {object} models.ResponseError
 // @Failure 500 {object} models.ResponseError
@@ -182,20 +188,21 @@ func (h *TodoHandler) List(ctx echo.Context) error {
 	request := new(models.TodoListRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
-		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
+		return HandleError(ctx, http.StatusBadRequest, ErrorBindingRequest)
 	}
 
 	response, err := h.UseCase.List(ctx.Request().Context(), request)
 	if err != nil {
 		h.Log.Errorf("failed to list todo: %v", err)
-		if err.Error() == "Bad Request" {
+		switch {
+		case err.Error() == "Bad Request":
 			return HandleError(ctx, http.StatusBadRequest, ErrValidation)
-		} else {
+		case err.Error() == "Not Found":
+			return HandleError(ctx, http.StatusNotFound, ErrNotFound)
+		default:
 			return HandleError(ctx, http.StatusInternalServerError, ErrorInternalServer)
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, models.ResponseSuccess[[]*models.TodoResponse]{
-		Data: response,
-	})
+	return ctx.JSON(http.StatusOK, response)
 }

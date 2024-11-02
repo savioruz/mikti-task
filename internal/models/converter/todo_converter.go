@@ -14,3 +14,11 @@ func TodoToResponse(todo *entities.Todo) *models.TodoResponse {
 		UpdatedAt: todo.UpdatedAt.String(),
 	}
 }
+
+func TodosToResponses(todos []entities.Todo) []*models.TodoResponse {
+	todoResponses := make([]*models.TodoResponse, len(todos))
+	for i := range todos {
+		todoResponses[i] = TodoToResponse(&todos[i])
+	}
+	return todoResponses
+}

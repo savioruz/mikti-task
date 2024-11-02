@@ -25,10 +25,10 @@ type TodoUsecase struct {
 	TodoRepository *repositories.TodoRepository
 }
 
-func NewTodoUsecase(db *gorm.DB, cache *cache.Cache, log *logrus.Logger, validate *validator.Validate, todoRepository *repositories.TodoRepository) *TodoUsecase {
+func NewTodoUsecase(db *gorm.DB, c *cache.Cache, log *logrus.Logger, validate *validator.Validate, todoRepository *repositories.TodoRepository) *TodoUsecase {
 	return &TodoUsecase{
 		DB:             db,
-		Cache:          cache,
+		Cache:          c,
 		Log:            log,
 		Validate:       validate,
 		TodoRepository: todoRepository,
@@ -58,6 +58,8 @@ func (u *TodoUsecase) Create(ctx context.Context, request *models.TodoCreateRequ
 		u.Log.Errorf("failed to commit transaction: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
+
+	u.invalidateListCache()
 
 	return converter.TodoToResponse(todo), nil
 }
@@ -115,7 +117,7 @@ func (u *TodoUsecase) Delete(ctx context.Context, request *models.TodoDeleteRequ
 	todo := &entities.Todo{}
 	if err := u.TodoRepository.GetByID(tx, todo, request.ID); err != nil {
 		u.Log.Errorf("failed to get todo: %v", err)
-		return errors.New(http.StatusText(http.StatusInternalServerError))
+		return errors.New(http.StatusText(http.StatusNotFound))
 	}
 
 	if err := u.TodoRepository.Delete(tx, todo); err != nil {
@@ -153,7 +155,7 @@ func (u *TodoUsecase) Get(ctx context.Context, request *models.TodoGetRequest) (
 		todo := &entities.Todo{}
 		if err := u.TodoRepository.GetByID(tx, todo, request.ID); err != nil {
 			u.Log.Errorf("failed to get todo: %v", err)
-			return nil, errors.New(http.StatusText(http.StatusInternalServerError))
+			return nil, errors.New(http.StatusText(http.StatusNotFound))
 		}
 
 		response := converter.TodoToResponse(todo)
@@ -166,40 +168,98 @@ func (u *TodoUsecase) Get(ctx context.Context, request *models.TodoGetRequest) (
 	}
 }
 
-func (u *TodoUsecase) List(ctx context.Context, request *models.TodoListRequest) ([]*models.TodoResponse, error) {
+func (u *TodoUsecase) List(ctx context.Context, request *models.TodoListRequest) (*models.ResponseSuccess[[]*models.TodoResponse], error) {
 	if err := u.Validate.Struct(request); err != nil {
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
-	key := "todos:list"
-	var data []*models.TodoResponse
-	err := u.Cache.Get(key, &data)
+	// Ensure valid pagination parameters
+	if request.Size <= 0 {
+		request.Size = 10 // Default page size
+	}
+	if request.Page <= 0 {
+		request.Page = 1 // Default page number
+	}
+
+	// Cache keys for both data and metadata
+	dataKey := fmt.Sprintf("todos:list:data:%d:%d", request.Page, request.Size)
+	metadataKey := "todos:list:metadata"
+
+	// Try to get cached data
+	var cachedData []*models.TodoResponse
+	err := u.Cache.Get(dataKey, &cachedData)
 	if err != nil && !errors.Is(err, cache.ErrCacheMiss) {
 		u.Log.Errorf("failed to get data from cache: %v", err)
 	}
 
-	if len(data) > 0 {
-		u.Log.Infof("data from cache: %v", data)
-		return data, nil
-	} else {
-		tx := u.DB.WithContext(ctx).Begin()
-		defer tx.Rollback()
+	// Try to get cached metadata
+	var totalItems int
+	err = u.Cache.Get(metadataKey, &totalItems)
+	if err != nil && !errors.Is(err, cache.ErrCacheMiss) {
+		u.Log.Errorf("failed to get metadata from cache: %v", err)
+	}
 
-		var todos []entities.Todo
-		if err := u.TodoRepository.GetAll(tx, &todos); err != nil {
-			u.Log.Errorf("failed to get todos: %v", err)
-			return nil, errors.New(http.StatusText(http.StatusInternalServerError))
-		}
+	// If we have both cached data and metadata, return them
+	if len(cachedData) > 0 && totalItems > 0 {
+		u.Log.Infof("Data retrieved from cache")
+		totalPages := (totalItems + request.Size - 1) / request.Size
+		return &models.ResponseSuccess[[]*models.TodoResponse]{
+			Data: cachedData,
+			Paging: &models.PageMetadata{
+				Page:       request.Page,
+				Size:       request.Size,
+				TotalItems: totalItems,
+				TotalPages: totalPages,
+			},
+		}, nil
+	}
 
-		var todoResponses []*models.TodoResponse
-		for _, todo := range todos {
-			todoResponses = append(todoResponses, converter.TodoToResponse(&todo))
-		}
+	// If cache miss, get data from database
+	tx := u.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
 
-		if err := u.Cache.Set(key, todoResponses, 5*time.Minute); err != nil {
-			u.Log.Errorf("failed to set data to cache: %v", err)
-		}
+	var todos []entities.Todo
+	dbTotalItems, err := u.TodoRepository.GetAll(tx, &todos, request.Page, request.Size)
+	if err != nil {
+		u.Log.Errorf("failed to get todos from database: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusNotFound))
+	}
 
-		return todoResponses, nil
+	if dbTotalItems == 0 || len(todos) == 0 {
+		return nil, errors.New(http.StatusText(http.StatusNotFound))
+	}
+
+	todoResponses := converter.TodosToResponses(todos)
+
+	// Cache both the data for this page and the total count
+	if err := u.Cache.Set(dataKey, todoResponses, 5*time.Minute); err != nil {
+		u.Log.Errorf("failed to set data to cache: %v", err)
+	}
+	if err := u.Cache.Set(metadataKey, int(dbTotalItems), 5*time.Minute); err != nil {
+		u.Log.Errorf("failed to set metadata to cache: %v", err)
+	}
+
+	totalPages := (int(dbTotalItems) + request.Size - 1) / request.Size
+	response := &models.ResponseSuccess[[]*models.TodoResponse]{
+		Data: todoResponses,
+		Paging: &models.PageMetadata{
+			Page:       request.Page,
+			Size:       request.Size,
+			TotalItems: int(dbTotalItems),
+			TotalPages: totalPages,
+		},
+	}
+
+	return response, nil
+}
+
+func (u *TodoUsecase) invalidateListCache() {
+	if err := u.Cache.Delete("todos:list:metadata"); err != nil {
+		u.Log.Errorf("failed to delete metadata cache: %v", err)
+	}
+
+	pattern := "todos:list:data:*"
+	if err := u.Cache.DeletePattern(pattern); err != nil {
+		u.Log.Errorf("failed to delete data caches: %v", err)
 	}
 }

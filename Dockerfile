@@ -30,3 +30,6 @@ COPY --from=builder ["/build/todos", "/"]
 
 # Command to run when starting the container.
 ENTRYPOINT ["/todos"]
+
+# Expose port 3000 to the outside world.
+EXPOSE 3000
