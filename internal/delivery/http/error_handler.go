@@ -11,6 +11,8 @@ var (
 	ErrValidation       = errors.New("validation error")
 	ErrorInternalServer = errors.New("failed to process request")
 	ErrorUnauthorized   = errors.New("unauthorized")
+	ErrorConflict       = errors.New("conflict")
+	ErrNotFound         = errors.New("not found")
 )
 
 func HandleError(c echo.Context, status int, err error) error {

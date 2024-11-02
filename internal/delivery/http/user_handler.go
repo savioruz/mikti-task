@@ -35,15 +35,18 @@ func (h *UserHandler) Register(ctx echo.Context) error {
 	request := new(models.RegisterRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
-		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
+		return HandleError(ctx, http.StatusBadRequest, ErrorBindingRequest)
 	}
 
 	response, err := h.UseCase.Create(ctx.Request().Context(), request)
 	if err != nil {
 		h.Log.Errorf("failed to register user: %v", err)
-		if err.Error() == "Bad Request" {
+		switch {
+		case err.Error() == "Bad Request":
 			return HandleError(ctx, http.StatusBadRequest, ErrValidation)
-		} else {
+		case err.Error() == "Conflict":
+			return HandleError(ctx, http.StatusConflict, ErrorConflict)
+		default:
 			return HandleError(ctx, http.StatusInternalServerError, ErrorInternalServer)
 		}
 	}
@@ -68,17 +71,18 @@ func (h *UserHandler) Login(ctx echo.Context) error {
 	request := new(models.LoginRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
-		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
+		return HandleError(ctx, http.StatusBadRequest, ErrorBindingRequest)
 	}
 
 	response, err := h.UseCase.Login(ctx.Request().Context(), request)
 	if err != nil {
 		h.Log.Errorf("failed to login user: %v", err)
-		if err.Error() == "Bad Request" {
+		switch {
+		case err.Error() == "Bad Request":
 			return HandleError(ctx, http.StatusBadRequest, ErrValidation)
-		} else if err.Error() == "Unauthorized" {
+		case err.Error() == "Unauthorized":
 			return HandleError(ctx, http.StatusUnauthorized, ErrorUnauthorized)
-		} else {
+		default:
 			return HandleError(ctx, http.StatusInternalServerError, ErrorInternalServer)
 		}
 	}
@@ -103,15 +107,18 @@ func (h *UserHandler) Refresh(ctx echo.Context) error {
 	request := new(models.RefreshTokenRequest)
 	if err := ctx.Bind(request); err != nil {
 		h.Log.Errorf("failed to bind request: %v", err)
-		return HandleError(ctx, http.StatusInternalServerError, ErrorBindingRequest)
+		return HandleError(ctx, http.StatusBadRequest, ErrorBindingRequest)
 	}
 
 	response, err := h.UseCase.RefreshToken(request)
 	if err != nil {
 		h.Log.Errorf("failed to refresh token: %v", err)
-		if err.Error() == "Bad Request" {
+		switch {
+		case err.Error() == "Bad Request":
 			return HandleError(ctx, http.StatusBadRequest, ErrValidation)
-		} else {
+		case err.Error() == "Unauthorized":
+			return HandleError(ctx, http.StatusUnauthorized, ErrorUnauthorized)
+		default:
 			return HandleError(ctx, http.StatusInternalServerError, ErrorInternalServer)
 		}
 	}

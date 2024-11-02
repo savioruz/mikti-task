@@ -42,10 +42,10 @@ func (u *UserUsecase) Create(ctx context.Context, request *models.RegisterReques
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
-	password, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
-	if err != nil {
-		u.Log.Errorf("failed to hash password: %v", err)
-		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
+	existingUser := &entities.User{}
+	if err := u.UserRepository.GetByEmail(tx, existingUser, request.Email); err == nil {
+		u.Log.Errorf("email already exists: %v", request.Email)
+		return nil, errors.New(http.StatusText(http.StatusConflict))
 	}
 
 	if request.Role == "admin" {
@@ -60,12 +60,18 @@ func (u *UserUsecase) Create(ctx context.Context, request *models.RegisterReques
 		}
 	}
 
+	password, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	if err != nil {
+		u.Log.Errorf("failed to hash password: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
+	}
+
 	user := &entities.User{
 		ID:       uuid.New().String(),
 		Email:    request.Email,
 		Password: string(password),
 		Role:     request.Role,
-		Status:   1,
+		Status:   true,
 	}
 
 	if err := u.UserRepository.Create(tx, user); err != nil {
@@ -92,7 +98,7 @@ func (u *UserUsecase) Login(ctx context.Context, request *models.LoginRequest) (
 	user := &entities.User{}
 	if err := u.UserRepository.GetByEmail(tx, user, request.Email); err != nil {
 		u.Log.Errorf("failed to get user by email: %v", err)
-		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
+		return nil, errors.New(http.StatusText(http.StatusUnauthorized))
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
