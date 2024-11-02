@@ -3,7 +3,7 @@ definitions:
   models.LoginRequest:
     properties:
       email:
-        maxLength: 255
+        maxLength: 100
         type: string
       password:
         maxLength: 255
@@ -39,7 +39,7 @@ definitions:
   models.RegisterRequest:
     properties:
       email:
-        maxLength: 255
+        maxLength: 100
         type: string
       password:
         maxLength: 255
@@ -147,7 +147,7 @@ definitions:
       role:
         type: string
       status:
-        type: integer
+        type: boolean
       updated_at:
         type: string
     type: object
@@ -169,13 +169,13 @@ paths:
       - application/json
       description: List todo
       parameters:
-      - description: Page
-        in: query
-        name: page
-        type: integer
       - description: Limit
         in: query
         name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
         type: integer
       produces:
       - application/json

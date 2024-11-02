@@ -44,14 +44,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Page",
-                        "name": "page",
+                        "description": "Limit",
+                        "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Limit",
-                        "name": "limit",
+                        "description": "Page",
+                        "name": "page",
                         "in": "query"
                     }
                 ],
@@ -427,7 +427,7 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 100
                 },
                 "password": {
                     "type": "string",
@@ -482,7 +482,7 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 100
                 },
                 "password": {
                     "type": "string",
@@ -638,7 +638,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "integer"
+                    "type": "boolean"
                 },
                 "updated_at": {
                     "type": "string"
