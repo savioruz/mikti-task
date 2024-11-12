@@ -24,7 +24,7 @@ model:
 resolver:
   layout: follow-schema
   dir: internal/delivery/graph/resolvers
-  package: graph
+  package: resolvers
   filename_template: "{name}.resolvers.go"
   # Optional: turn on to not generate template comments above resolvers
   # omit_template_comment: false
@@ -97,10 +97,10 @@ models:
       - github.com/99designs/gqlgen/graphql.Int32
   Todo:
     model:
-      - github.com/savioruz/mikti-task/tree/week-4/internal/models.TodoResponse
+      - github.com/savioruz/mikti-task/tree/week-4/internal/domain/model.TodoResponse
   TodoCreateInput:
     model:
-      - github.com/savioruz/mikti-task/tree/week-4/internal/models.TodoCreateRequest
+      - github.com/savioruz/mikti-task/tree/week-4/internal/domain/model.TodoCreateRequest
   TodoUpdateInput:
     model:
-      - github.com/savioruz/mikti-task/tree/week-4/internal/models.TodoUpdateRequest
+      - github.com/savioruz/mikti-task/tree/week-4/internal/domain/model.TodoUpdateRequest

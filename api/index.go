@@ -28,7 +28,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	validate := config.NewValidator()
 	app, log := config.NewEcho()
 
-	config.Bootstrap(&config.BootstrapConfig{
+	err := config.Bootstrap(&config.BootstrapConfig{
 		DB:       db,
 		Cache:    redis,
 		App:      app,
@@ -36,6 +36,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		Validate: validate,
 		JWT:      jwt,
 	})
+	if err != nil {
+		log.Fatalf("Failed to bootstrap application: %v", err)
+	}
 
 	app.ServeHTTP(w, r)
 }

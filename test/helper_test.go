@@ -3,7 +3,7 @@ package test
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/entities"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/entity"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -29,7 +29,7 @@ func ClearTodos() {
 
 func CreateTodos(t *testing.T, count int) {
 	for i := 0; i < count; i++ {
-		todos := &entities.Todo{
+		todos := &entity.Todo{
 			ID:        uuid.NewString(),
 			Title:     fmt.Sprintf("title-%d", i),
 			Completed: false,
@@ -39,15 +39,15 @@ func CreateTodos(t *testing.T, count int) {
 	}
 }
 
-func GetFirstUser(t *testing.T) *entities.User {
-	user := new(entities.User)
+func GetFirstUser(t *testing.T) *entity.User {
+	user := new(entity.User)
 	err := db.First(user).Error
 	assert.Nil(t, err)
 	return user
 }
 
 func GetFirstTodoID(t *testing.T) string {
-	todo := new(entities.Todo)
+	todo := new(entity.Todo)
 	err := db.First(todo).Error
 	assert.Nil(t, err)
 	return todo.ID

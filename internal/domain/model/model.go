@@ -1,13 +1,9 @@
-package models
+package model
 
-type ResponseSuccess[T any] struct {
+type Response[T any] struct {
 	Data    T             `json:"data,omitempty"`
 	Message *Message      `json:"message,omitempty"`
 	Paging  *PageMetadata `json:"paging,omitempty"`
-}
-
-type ResponseError struct {
-	Error string `json:"error"`
 }
 
 type Message struct {

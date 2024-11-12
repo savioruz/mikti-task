@@ -4,15 +4,16 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/handler"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/handler/todo"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/handler/user"
 	swagger "github.com/swaggo/echo-swagger"
 )
 
 type Config struct {
 	App            *echo.Echo
 	GraphQLHandler *handler.GraphQLHandler
-	TodoHandler    *http.TodoHandler
-	UserHandler    *http.UserHandler
+	TodoHandler    *todo.TodoHandlerImpl
+	UserHandler    *user.UserHandlerImpl
 	AuthMiddleware echo.MiddlewareFunc
 }
 
@@ -37,7 +38,7 @@ func (c *Config) protectedRoutes() {
 	g.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(30)))
 	g.Use(c.AuthMiddleware)
 	g.POST("/todo", c.TodoHandler.Create)
-	g.GET("/todo", c.TodoHandler.List)
+	g.GET("/todo", c.TodoHandler.GetAll)
 	g.GET("/todo/:id", c.TodoHandler.GetByID)
 	g.PUT("/todo/:id", c.TodoHandler.Update)
 	g.DELETE("/todo/:id", c.TodoHandler.Delete)
@@ -45,8 +46,9 @@ func (c *Config) protectedRoutes() {
 
 func (c *Config) graphqlRoutes() {
 	g := c.App.Group("/api/v1/graphql")
+	g.Use(c.AuthMiddleware)
 	g.POST("", c.GraphQLHandler.GraphQLHandler)
-	g.GET("/playground", c.GraphQLHandler.PlaygroundHandler)
+	c.App.GET("/playground", c.GraphQLHandler.PlaygroundHandler)
 }
 
 func (c *Config) swaggerRoutes() {

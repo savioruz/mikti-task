@@ -3,15 +3,18 @@ package config
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/cache"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/handler"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/resolvers"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/auth"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/handler/todo"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/handler/user"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/middleware"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/route"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/repositories"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/usecases"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/platform/cache"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/platform/jwt"
+	todoRepo "github.com/savioruz/mikti-task/tree/week-4/internal/repositories/todo"
+	userRepo "github.com/savioruz/mikti-task/tree/week-4/internal/repositories/user"
+	todoUsecase "github.com/savioruz/mikti-task/tree/week-4/internal/usecases/todo"
+	userUsecase "github.com/savioruz/mikti-task/tree/week-4/internal/usecases/user"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -22,30 +25,43 @@ type BootstrapConfig struct {
 	App      *echo.Echo
 	Log      *logrus.Logger
 	Validate *validator.Validate
-	JWT      *JWTConfig
+	JWT      *jwt.JWTConfig
 }
 
-func Bootstrap(config *BootstrapConfig) {
-	// Setup repositories
-	todoRepository := repositories.NewTodoRepository(config.Log)
-	userRepository := repositories.NewUserRepository(config.Log)
+func Bootstrap(config *BootstrapConfig) error {
+	// Initialize repositories
+	todoRepository := todoRepo.NewTodoRepository(config.DB, config.Log)
+	userRepository := userRepo.NewUserRepository(config.DB, config.Log)
 
-	// Setup jwt service
-	jwtService := auth.NewJWTService(config.JWT.JWTSecret, config.JWT.JWTAccessExpiry, config.JWT.JWTRefreshExpiry)
+	// Initialize JWT service
+	jwtService := jwt.NewJWTService(config.JWT)
 
-	// Setup usecases
-	todoUsecase := usecases.NewTodoUsecase(config.DB, config.Cache, config.Log, config.Validate, todoRepository)
-	userUsecase := usecases.NewUserUsecase(config.DB, config.Log, config.Validate, userRepository, jwtService)
+	// Initialize usecases
+	todoUC := todoUsecase.NewTodoUsecaseImpl(
+		config.DB,
+		config.Cache,
+		config.Log,
+		config.Validate,
+		todoRepository,
+	)
 
-	// Setup handlers
-	todoHandler := http.NewTodoHandler(config.Log, todoUsecase)
-	userHandler := http.NewUserHandler(config.Log, userUsecase)
+	userUC := userUsecase.NewUserUsecaseImpl(
+		config.DB,
+		config.Log,
+		config.Validate,
+		userRepository,
+		jwtService,
+	)
 
-	// Setup graphql handler
-	resolver := resolvers.NewResolver(todoUsecase)
+	// Initialize handlers
+	todoHandler := todo.NewTodoHandlerImpl(config.Log, todoUC)
+	userHandler := user.NewUserHandlerImpl(config.Log, userUC)
+
+	// Initialize GraphQL
+	resolver := resolvers.NewResolver(todoUC)
 	graphQLHandler := handler.NewGraphQLHandler(resolver)
 
-	// Setup middleware
+	// Initialize middleware
 	authMiddleware := middleware.AuthMiddleware(jwtService)
 
 	// Setup routes
@@ -59,4 +75,5 @@ func Bootstrap(config *BootstrapConfig) {
 	routeConfig.Setup()
 
 	config.Log.Info("Application is ready")
+	return nil
 }

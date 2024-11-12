@@ -1,10 +1,16 @@
-package auth
+package jwt
 
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
+
+type JWTConfig struct {
+	Secret        string
+	AccessExpiry  time.Duration
+	RefreshExpiry time.Duration
+}
 
 type JWTClaims struct {
 	UserID string `json:"user_id"`
@@ -13,29 +19,29 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-type JWTService struct {
+type JWTServiceImpl struct {
 	secretKey     []byte
 	accessExpiry  time.Duration
 	refreshExpiry time.Duration
 }
 
-func NewJWTService(secretKey string, accessExpiry, refreshExpiry time.Duration) *JWTService {
-	return &JWTService{
-		secretKey:     []byte(secretKey),
-		accessExpiry:  accessExpiry,
-		refreshExpiry: refreshExpiry,
+func NewJWTService(config *JWTConfig) *JWTServiceImpl {
+	return &JWTServiceImpl{
+		secretKey:     []byte(config.Secret),
+		accessExpiry:  config.AccessExpiry,
+		refreshExpiry: config.RefreshExpiry,
 	}
 }
 
-func (s *JWTService) GenerateAccessToken(userID, email, role string) (string, error) {
+func (s *JWTServiceImpl) GenerateAccessToken(userID, email, role string) (string, error) {
 	return s.generateToken(userID, email, role, s.accessExpiry)
 }
 
-func (s *JWTService) GenerateRefreshToken(userID, email, role string) (string, error) {
+func (s *JWTServiceImpl) GenerateRefreshToken(userID, email, role string) (string, error) {
 	return s.generateToken(userID, email, role, s.refreshExpiry)
 }
 
-func (s *JWTService) generateToken(userID, email, role string, expiry time.Duration) (string, error) {
+func (s *JWTServiceImpl) generateToken(userID, email, role string, expiry time.Duration) (string, error) {
 	claims := &JWTClaims{
 		UserID: userID,
 		Email:  email,
@@ -50,7 +56,7 @@ func (s *JWTService) generateToken(userID, email, role string, expiry time.Durat
 	return token.SignedString(s.secretKey)
 }
 
-func (s *JWTService) ValidateToken(tokenString string) (*JWTClaims, error) {
+func (s *JWTServiceImpl) ValidateToken(tokenString string) (*JWTClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return s.secretKey, nil
 	})

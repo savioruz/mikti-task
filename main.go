@@ -28,7 +28,7 @@ func main() {
 	validate := config.NewValidator()
 	app, log := config.NewEcho()
 
-	config.Bootstrap(&config.BootstrapConfig{
+	err := config.Bootstrap(&config.BootstrapConfig{
 		DB:       db,
 		Cache:    redis,
 		App:      app,
@@ -36,6 +36,9 @@ func main() {
 		Validate: validate,
 		JWT:      jwt,
 	})
+	if err != nil {
+		log.Fatalf("Failed to bootstrap application: %v", err)
+	}
 
 	port := viper.GetString("APP_PORT")
 	go func() {

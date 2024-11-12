@@ -1,9 +1,9 @@
-package http
+package handler
 
 import (
 	"errors"
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/models"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 )
 
 func HandleError(c echo.Context, status int, err error) error {
-	return c.JSON(status, models.ResponseError{
-		Error: err.Error(),
+	return c.JSON(status, model.Response[any]{
+		Message: &model.Message{Message: err.Error()},
 	})
 }

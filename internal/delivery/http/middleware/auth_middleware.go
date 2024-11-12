@@ -2,12 +2,12 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/auth"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/platform/jwt"
 	"net/http"
 	"strings"
 )
 
-func AuthMiddleware(jwtService *auth.JWTService) echo.MiddlewareFunc {
+func AuthMiddleware(jwtService jwt.JWTService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			authHeader := c.Request().Header.Get("Authorization")

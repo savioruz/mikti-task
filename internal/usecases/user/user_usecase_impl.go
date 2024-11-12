@@ -1,31 +1,31 @@
-package usecases
+package user
 
 import (
 	"context"
 	"errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/auth"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/entities"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/models"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/models/converter"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/repositories"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/entity"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model/converter"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/platform/jwt"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/repositories/user"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
 )
 
-type UserUsecase struct {
+type UserUsecaseImpl struct {
 	DB             *gorm.DB
 	Log            *logrus.Logger
 	Validate       *validator.Validate
-	UserRepository *repositories.UserRepository
-	JWTService     *auth.JWTService
+	UserRepository *user.UserRepositoryImpl
+	JWTService     jwt.JWTService
 }
 
-func NewUserUsecase(db *gorm.DB, log *logrus.Logger, validate *validator.Validate, userRepository *repositories.UserRepository, jwtService *auth.JWTService) *UserUsecase {
-	return &UserUsecase{
+func NewUserUsecaseImpl(db *gorm.DB, log *logrus.Logger, validate *validator.Validate, userRepository *user.UserRepositoryImpl, jwtService jwt.JWTService) *UserUsecaseImpl {
+	return &UserUsecaseImpl{
 		DB:             db,
 		Log:            log,
 		Validate:       validate,
@@ -34,7 +34,7 @@ func NewUserUsecase(db *gorm.DB, log *logrus.Logger, validate *validator.Validat
 	}
 }
 
-func (u *UserUsecase) Create(ctx context.Context, request *models.RegisterRequest) (*models.UserResponse, error) {
+func (u *UserUsecaseImpl) Create(ctx context.Context, request *model.RegisterRequest) (*model.UserResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -42,7 +42,7 @@ func (u *UserUsecase) Create(ctx context.Context, request *models.RegisterReques
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
-	existingUser := &entities.User{}
+	existingUser := &entity.User{}
 	if err := u.UserRepository.GetByEmail(tx, existingUser, request.Email); err == nil {
 		u.Log.Errorf("email already exists: %v", request.Email)
 		return nil, errors.New(http.StatusText(http.StatusConflict))
@@ -66,7 +66,7 @@ func (u *UserUsecase) Create(ctx context.Context, request *models.RegisterReques
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
-	user := &entities.User{
+	data := &entity.User{
 		ID:       uuid.New().String(),
 		Email:    request.Email,
 		Password: string(password),
@@ -74,7 +74,7 @@ func (u *UserUsecase) Create(ctx context.Context, request *models.RegisterReques
 		Status:   true,
 	}
 
-	if err := u.UserRepository.Create(tx, user); err != nil {
+	if err := u.UserRepository.Create(tx, data); err != nil {
 		u.Log.Errorf("failed to create user: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
@@ -84,10 +84,10 @@ func (u *UserUsecase) Create(ctx context.Context, request *models.RegisterReques
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
-	return converter.UserToResponse(user), nil
+	return converter.UserToResponse(data), nil
 }
 
-func (u *UserUsecase) Login(ctx context.Context, request *models.LoginRequest) (*models.TokenResponse, error) {
+func (u *UserUsecaseImpl) Login(ctx context.Context, request *model.LoginRequest) (*model.TokenResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
@@ -95,24 +95,24 @@ func (u *UserUsecase) Login(ctx context.Context, request *models.LoginRequest) (
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
-	user := &entities.User{}
-	if err := u.UserRepository.GetByEmail(tx, user, request.Email); err != nil {
+	data := &entity.User{}
+	if err := u.UserRepository.GetByEmail(tx, data, request.Email); err != nil {
 		u.Log.Errorf("failed to get user by email: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusUnauthorized))
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(data.Password), []byte(request.Password)); err != nil {
 		u.Log.Errorf("failed to compare password: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusUnauthorized))
 	}
 
-	accessToken, err := u.JWTService.GenerateAccessToken(user.ID, user.Email, user.Role)
+	accessToken, err := u.JWTService.GenerateAccessToken(data.ID, data.Email, data.Role)
 	if err != nil {
 		u.Log.Errorf("failed to generate access token: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
-	refreshToken, err := u.JWTService.GenerateRefreshToken(user.ID, user.Email, user.Role)
+	refreshToken, err := u.JWTService.GenerateRefreshToken(data.ID, data.Email, data.Role)
 	if err != nil {
 		u.Log.Errorf("failed to generate refresh token: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
@@ -121,7 +121,7 @@ func (u *UserUsecase) Login(ctx context.Context, request *models.LoginRequest) (
 	return converter.LoginToTokenResponse(accessToken, refreshToken), nil
 }
 
-func (u *UserUsecase) RefreshToken(request *models.RefreshTokenRequest) (*models.TokenResponse, error) {
+func (u *UserUsecaseImpl) RefreshToken(request *model.RefreshTokenRequest) (*model.TokenResponse, error) {
 	if err := u.Validate.Struct(request); err != nil {
 		u.Log.Errorf("failed to validate refresh token request: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))

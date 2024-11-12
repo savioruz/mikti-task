@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/savioruz/mikti-task/tree/week-4/config"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/cache"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/platform/cache"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -13,7 +13,7 @@ import (
 var (
 	app      *echo.Echo
 	db       *gorm.DB
-	redis    *cache.Cache
+	redis    *cache.ImplCache
 	log      *logrus.Logger
 	validate *validator.Validate
 	c        *viper.Viper
@@ -33,7 +33,7 @@ func init() {
 		log = newLog
 	}
 
-	config.Bootstrap(&config.BootstrapConfig{
+	err := config.Bootstrap(&config.BootstrapConfig{
 		DB:       db,
 		Cache:    redis,
 		App:      app,
@@ -41,4 +41,7 @@ func init() {
 		Validate: validate,
 		JWT:      jwt,
 	})
+	if err != nil {
+		log.Fatalf("Failed to bootstrap application: %v", err)
+	}
 }

@@ -14,7 +14,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/models"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -48,9 +48,9 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CreateTodo func(childComplexity int, input models.TodoCreateRequest) int
+		CreateTodo func(childComplexity int, input model.TodoCreateRequest) int
 		DeleteTodo func(childComplexity int, id string) int
-		UpdateTodo func(childComplexity int, id string, input models.TodoUpdateRequest) int
+		UpdateTodo func(childComplexity int, id string, input model.TodoUpdateRequest) int
 	}
 
 	Query struct {
@@ -68,13 +68,13 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateTodo(ctx context.Context, input models.TodoCreateRequest) (*models.TodoResponse, error)
-	UpdateTodo(ctx context.Context, id string, input models.TodoUpdateRequest) (*models.TodoResponse, error)
+	CreateTodo(ctx context.Context, input model.TodoCreateRequest) (*model.TodoResponse, error)
+	UpdateTodo(ctx context.Context, id string, input model.TodoUpdateRequest) (*model.TodoResponse, error)
 	DeleteTodo(ctx context.Context, id string) (bool, error)
 }
 type QueryResolver interface {
-	Todo(ctx context.Context, id string) (*models.TodoResponse, error)
-	Todos(ctx context.Context, page *int, size *int) ([]*models.TodoResponse, error)
+	Todo(ctx context.Context, id string) (*model.TodoResponse, error)
+	Todos(ctx context.Context, page *int, size *int) ([]*model.TodoResponse, error)
 }
 
 type executableSchema struct {
@@ -106,7 +106,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(models.TodoCreateRequest)), true
+		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(model.TodoCreateRequest)), true
 
 	case "Mutation.deleteTodo":
 		if e.complexity.Mutation.DeleteTodo == nil {
@@ -130,7 +130,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateTodo(childComplexity, args["id"].(string), args["input"].(models.TodoUpdateRequest)), true
+		return e.complexity.Mutation.UpdateTodo(childComplexity, args["id"].(string), args["input"].(model.TodoUpdateRequest)), true
 
 	case "Query.todo":
 		if e.complexity.Query.Todo == nil {
@@ -330,13 +330,13 @@ func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_createTodo_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (models.TodoCreateRequest, error) {
+) (model.TodoCreateRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNTodoCreateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoCreateRequest(ctx, tmp)
+		return ec.unmarshalNTodoCreateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoCreateRequest(ctx, tmp)
 	}
 
-	var zeroVal models.TodoCreateRequest
+	var zeroVal model.TodoCreateRequest
 	return zeroVal, nil
 }
 
@@ -394,13 +394,13 @@ func (ec *executionContext) field_Mutation_updateTodo_argsID(
 func (ec *executionContext) field_Mutation_updateTodo_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (models.TodoUpdateRequest, error) {
+) (model.TodoUpdateRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNTodoUpdateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoUpdateRequest(ctx, tmp)
+		return ec.unmarshalNTodoUpdateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoUpdateRequest(ctx, tmp)
 	}
 
-	var zeroVal models.TodoUpdateRequest
+	var zeroVal model.TodoUpdateRequest
 	return zeroVal, nil
 }
 
@@ -559,7 +559,7 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateTodo(rctx, fc.Args["input"].(models.TodoCreateRequest))
+		return ec.resolvers.Mutation().CreateTodo(rctx, fc.Args["input"].(model.TodoCreateRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -571,9 +571,9 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.TodoResponse)
+	res := resTmp.(*model.TodoResponse)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoResponse(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -626,7 +626,7 @@ func (ec *executionContext) _Mutation_updateTodo(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateTodo(rctx, fc.Args["id"].(string), fc.Args["input"].(models.TodoUpdateRequest))
+		return ec.resolvers.Mutation().UpdateTodo(rctx, fc.Args["id"].(string), fc.Args["input"].(model.TodoUpdateRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -638,9 +638,9 @@ func (ec *executionContext) _Mutation_updateTodo(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.TodoResponse)
+	res := resTmp.(*model.TodoResponse)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoResponse(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -757,9 +757,9 @@ func (ec *executionContext) _Query_todo(ctx context.Context, field graphql.Colle
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*models.TodoResponse)
+	res := resTmp.(*model.TodoResponse)
 	fc.Result = res
-	return ec.marshalOTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoResponse(ctx, field.Selections, res)
+	return ec.marshalOTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_todo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -824,9 +824,9 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.TodoResponse)
+	res := resTmp.([]*model.TodoResponse)
 	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoResponseᚄ(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponseᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_todos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -994,7 +994,7 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *models.TodoResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *model.TodoResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Todo_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1038,7 +1038,7 @@ func (ec *executionContext) fieldContext_Todo_id(_ context.Context, field graphq
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_title(ctx context.Context, field graphql.CollectedField, obj *models.TodoResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Todo_title(ctx context.Context, field graphql.CollectedField, obj *model.TodoResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Todo_title(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1082,7 +1082,7 @@ func (ec *executionContext) fieldContext_Todo_title(_ context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_completed(ctx context.Context, field graphql.CollectedField, obj *models.TodoResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Todo_completed(ctx context.Context, field graphql.CollectedField, obj *model.TodoResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Todo_completed(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1126,7 +1126,7 @@ func (ec *executionContext) fieldContext_Todo_completed(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_created_at(ctx context.Context, field graphql.CollectedField, obj *models.TodoResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Todo_created_at(ctx context.Context, field graphql.CollectedField, obj *model.TodoResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Todo_created_at(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1170,7 +1170,7 @@ func (ec *executionContext) fieldContext_Todo_created_at(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.TodoResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _Todo_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.TodoResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Todo_updated_at(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2987,8 +2987,8 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputTodoCreateInput(ctx context.Context, obj interface{}) (models.TodoCreateRequest, error) {
-	var it models.TodoCreateRequest
+func (ec *executionContext) unmarshalInputTodoCreateInput(ctx context.Context, obj interface{}) (model.TodoCreateRequest, error) {
+	var it model.TodoCreateRequest
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -3014,8 +3014,8 @@ func (ec *executionContext) unmarshalInputTodoCreateInput(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputTodoUpdateInput(ctx context.Context, obj interface{}) (models.TodoUpdateRequest, error) {
-	var it models.TodoUpdateRequest
+func (ec *executionContext) unmarshalInputTodoUpdateInput(ctx context.Context, obj interface{}) (model.TodoUpdateRequest, error) {
+	var it model.TodoUpdateRequest
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -3212,7 +3212,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var todoImplementors = []string{"Todo"}
 
-func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj *models.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj *model.TodoResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, todoImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3640,11 +3640,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTodo2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v models.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v model.TodoResponse) graphql.Marshaler {
 	return ec._Todo(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TodoResponse) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3668,7 +3668,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmikti�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoResponse(ctx, sel, v[i])
+			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3688,7 +3688,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmikti�
 	return ret
 }
 
-func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *models.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *model.TodoResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3698,12 +3698,12 @@ func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑta
 	return ec._Todo(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNTodoCreateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoCreateRequest(ctx context.Context, v interface{}) (models.TodoCreateRequest, error) {
+func (ec *executionContext) unmarshalNTodoCreateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoCreateRequest(ctx context.Context, v interface{}) (model.TodoCreateRequest, error) {
 	res, err := ec.unmarshalInputTodoCreateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNTodoUpdateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoUpdateRequest(ctx context.Context, v interface{}) (models.TodoUpdateRequest, error) {
+func (ec *executionContext) unmarshalNTodoUpdateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoUpdateRequest(ctx context.Context, v interface{}) (model.TodoUpdateRequest, error) {
 	res, err := ec.unmarshalInputTodoUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -4019,7 +4019,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalOTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋmodelsᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *models.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalOTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *model.TodoResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

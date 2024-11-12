@@ -1,6 +1,6 @@
 basePath: /api/v1
 definitions:
-  models.LoginRequest:
+  model.LoginRequest:
     properties:
       email:
         maxLength: 100
@@ -13,12 +13,12 @@ definitions:
     - email
     - password
     type: object
-  models.Message:
+  model.Message:
     properties:
       message:
         type: string
     type: object
-  models.PageMetadata:
+  model.PageMetadata:
     properties:
       page:
         type: integer
@@ -29,14 +29,14 @@ definitions:
       total_pages:
         type: integer
     type: object
-  models.RefreshTokenRequest:
+  model.RefreshTokenRequest:
     properties:
       refresh_token:
         type: string
     required:
     - refresh_token
     type: object
-  models.RegisterRequest:
+  model.RegisterRequest:
     properties:
       email:
         maxLength: 100
@@ -55,50 +55,53 @@ definitions:
     - password
     - role
     type: object
-  models.ResponseError:
+  model.Response-any:
     properties:
-      error:
-        type: string
+      data: {}
+      message:
+        $ref: '#/definitions/model.Message'
+      paging:
+        $ref: '#/definitions/model.PageMetadata'
     type: object
-  models.ResponseSuccess-array_models_TodoResponse:
+  model.Response-array_model_TodoResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/models.TodoResponse'
+          $ref: '#/definitions/model.TodoResponse'
         type: array
       message:
-        $ref: '#/definitions/models.Message'
+        $ref: '#/definitions/model.Message'
       paging:
-        $ref: '#/definitions/models.PageMetadata'
+        $ref: '#/definitions/model.PageMetadata'
     type: object
-  models.ResponseSuccess-models_TodoResponse:
+  model.Response-model_TodoResponse:
     properties:
       data:
-        $ref: '#/definitions/models.TodoResponse'
+        $ref: '#/definitions/model.TodoResponse'
       message:
-        $ref: '#/definitions/models.Message'
+        $ref: '#/definitions/model.Message'
       paging:
-        $ref: '#/definitions/models.PageMetadata'
+        $ref: '#/definitions/model.PageMetadata'
     type: object
-  models.ResponseSuccess-models_TokenResponse:
+  model.Response-model_TokenResponse:
     properties:
       data:
-        $ref: '#/definitions/models.TokenResponse'
+        $ref: '#/definitions/model.TokenResponse'
       message:
-        $ref: '#/definitions/models.Message'
+        $ref: '#/definitions/model.Message'
       paging:
-        $ref: '#/definitions/models.PageMetadata'
+        $ref: '#/definitions/model.PageMetadata'
     type: object
-  models.ResponseSuccess-models_UserResponse:
+  model.Response-model_UserResponse:
     properties:
       data:
-        $ref: '#/definitions/models.UserResponse'
+        $ref: '#/definitions/model.UserResponse'
       message:
-        $ref: '#/definitions/models.Message'
+        $ref: '#/definitions/model.Message'
       paging:
-        $ref: '#/definitions/models.PageMetadata'
+        $ref: '#/definitions/model.PageMetadata'
     type: object
-  models.TodoCreateRequest:
+  model.TodoCreateRequest:
     properties:
       title:
         maxLength: 255
@@ -107,7 +110,7 @@ definitions:
     required:
     - title
     type: object
-  models.TodoResponse:
+  model.TodoResponse:
     properties:
       completed:
         type: boolean
@@ -120,7 +123,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  models.TodoUpdateRequest:
+  model.TodoUpdateRequest:
     properties:
       completed:
         type: boolean
@@ -129,14 +132,14 @@ definitions:
         minLength: 5
         type: string
     type: object
-  models.TokenResponse:
+  model.TokenResponse:
     properties:
       access_token:
         type: string
       refresh_token:
         type: string
     type: object
-  models.UserResponse:
+  model.UserResponse:
     properties:
       created_at:
         type: string
@@ -183,15 +186,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess-array_models_TodoResponse'
+            $ref: '#/definitions/model.Response-array_model_TodoResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
       security:
       - ApiKeyAuth: []
       summary: List todo
@@ -207,22 +210,22 @@ paths:
         name: todo
         required: true
         schema:
-          $ref: '#/definitions/models.TodoCreateRequest'
+          $ref: '#/definitions/model.TodoCreateRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.ResponseSuccess-models_TodoResponse'
+            $ref: '#/definitions/model.Response-model_TodoResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
       security:
       - ApiKeyAuth: []
       summary: Create a new todo
@@ -245,15 +248,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess-models_TodoResponse'
+            $ref: '#/definitions/model.Response-model_TodoResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
       security:
       - ApiKeyAuth: []
       summary: Delete todo
@@ -275,15 +278,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess-models_TodoResponse'
+            $ref: '#/definitions/model.Response-model_TodoResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
       security:
       - ApiKeyAuth: []
       summary: Get todo by ID
@@ -304,22 +307,22 @@ paths:
         name: todo
         required: true
         schema:
-          $ref: '#/definitions/models.TodoUpdateRequest'
+          $ref: '#/definitions/model.TodoUpdateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess-models_TodoResponse'
+            $ref: '#/definitions/model.Response-model_TodoResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
       security:
       - ApiKeyAuth: []
       summary: Update todo
@@ -336,22 +339,22 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.RegisterRequest'
+          $ref: '#/definitions/model.RegisterRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.ResponseSuccess-models_UserResponse'
+            $ref: '#/definitions/model.Response-model_UserResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
       summary: Register a new user
       tags:
       - user
@@ -366,22 +369,22 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.LoginRequest'
+          $ref: '#/definitions/model.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess-models_UserResponse'
+            $ref: '#/definitions/model.Response-model_UserResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
       summary: Login a user
       tags:
       - user
@@ -396,22 +399,22 @@ paths:
         name: token
         required: true
         schema:
-          $ref: '#/definitions/models.RefreshTokenRequest'
+          $ref: '#/definitions/model.RefreshTokenRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess-models_TokenResponse'
+            $ref: '#/definitions/model.Response-model_TokenResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ResponseError'
+            $ref: '#/definitions/model.Response-any'
       summary: Refresh token
       tags:
       - user

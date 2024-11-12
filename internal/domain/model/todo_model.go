@@ -1,4 +1,4 @@
-package models
+package model
 
 type TodoResponse struct {
 	ID        string `json:"id"`
@@ -29,7 +29,7 @@ type TodoGetRequest struct {
 	ID string `param:"id" validate:"required,uuid"`
 }
 
-type TodoListRequest struct {
+type TodoGetAllRequest struct {
 	Page int `query:"page" validate:"numeric"`
 	Size int `query:"size" validate:"numeric"`
 }

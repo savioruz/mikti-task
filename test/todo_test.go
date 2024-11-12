@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/models"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -18,7 +18,7 @@ import (
 
 func getAuthToken(t *testing.T) string {
 	// First register a user
-	registerBody := models.RegisterRequest{
+	registerBody := model.RegisterRequest{
 		Email:    "todo.test@svrz.xyz",
 		Password: "strongpassword",
 		Role:     "user",
@@ -35,7 +35,7 @@ func getAuthToken(t *testing.T) string {
 	app.ServeHTTP(registerRecorder, registerRequest)
 
 	// Then login to get the token
-	loginBody := models.LoginRequest{
+	loginBody := model.LoginRequest{
 		Email:    "todo.test@svrz.xyz",
 		Password: "strongpassword",
 	}
@@ -78,7 +78,7 @@ func TestCreateTodo(t *testing.T) {
 
 	token := getAuthToken(t)
 
-	requestBody := models.TodoCreateRequest{
+	requestBody := model.TodoCreateRequest{
 		Title: "Test Todo",
 	}
 
@@ -117,7 +117,7 @@ func TestCreateTodo(t *testing.T) {
 func TestCreateTodoUnauthorized(t *testing.T) {
 	ClearAll()
 
-	requestBody := models.TodoCreateRequest{
+	requestBody := model.TodoCreateRequest{
 		Title: "Test Todo",
 	}
 
@@ -150,7 +150,7 @@ func TestCreateTodoValidationError(t *testing.T) {
 
 	token := getAuthToken(t)
 
-	requestBody := models.TodoCreateRequest{
+	requestBody := model.TodoCreateRequest{
 		Title: "",
 	}
 
@@ -188,7 +188,7 @@ func TestUpdateTodo(t *testing.T) {
 
 	newTitle := "Updated Todo"
 	completed := true
-	updateBody := models.TodoUpdateRequest{
+	updateBody := model.TodoUpdateRequest{
 		Title:     &newTitle,
 		Completed: &completed,
 	}
@@ -228,7 +228,7 @@ func TestUpdateTodoUnauthorized(t *testing.T) {
 
 	newTitle := "Updated Todo"
 	completed := true
-	updateBody := models.TodoUpdateRequest{
+	updateBody := model.TodoUpdateRequest{
 		Title:     &newTitle,
 		Completed: &completed,
 	}
@@ -266,7 +266,7 @@ func TestUpdateTodoValidationError(t *testing.T) {
 
 	newTitle := ""
 	completed := true
-	updateBody := models.TodoUpdateRequest{
+	updateBody := model.TodoUpdateRequest{
 		Title:     &newTitle,
 		Completed: &completed,
 	}

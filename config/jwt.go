@@ -1,20 +1,14 @@
 package config
 
 import (
+	"github.com/savioruz/mikti-task/tree/week-4/internal/platform/jwt"
 	"github.com/spf13/viper"
-	"time"
 )
 
-type JWTConfig struct {
-	JWTSecret        string
-	JWTAccessExpiry  time.Duration
-	JWTRefreshExpiry time.Duration
-}
-
-func NewJWT(viper *viper.Viper) *JWTConfig {
-	return &JWTConfig{
-		JWTSecret:        viper.GetString("JWT_SECRET"),
-		JWTAccessExpiry:  viper.GetDuration("JWT_ACCESS_EXPIRY"),
-		JWTRefreshExpiry: viper.GetDuration("JWT_REFRESH_EXPIRY"),
+func NewJWT(viper *viper.Viper) *jwt.JWTConfig {
+	return &jwt.JWTConfig{
+		Secret:        viper.GetString("JWT_SECRET"),
+		AccessExpiry:  viper.GetDuration("JWT_ACCESS_EXPIRY"),
+		RefreshExpiry: viper.GetDuration("JWT_REFRESH_EXPIRY"),
 	}
 }

@@ -7,18 +7,19 @@ package resolvers
 import (
 	"context"
 	"fmt"
+
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/models"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
 )
 
 // CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input models.TodoCreateRequest) (*models.TodoResponse, error) {
+func (r *mutationResolver) CreateTodo(ctx context.Context, input model.TodoCreateRequest) (*model.TodoResponse, error) {
 	return r.TodoUsecase.Create(ctx, &input)
 }
 
 // UpdateTodo is the resolver for the updateTodo field.
-func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input models.TodoUpdateRequest) (*models.TodoResponse, error) {
-	u, err := r.TodoUsecase.Update(ctx, &models.TodoUpdateIDRequest{ID: id}, &input)
+func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input model.TodoUpdateRequest) (*model.TodoResponse, error) {
+	u, err := r.TodoUsecase.Update(ctx, &model.TodoUpdateIDRequest{ID: id}, &input)
 	if err != nil {
 		return nil, err
 	}
@@ -32,12 +33,12 @@ func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (bool, err
 }
 
 // Todo is the resolver for the todo field.
-func (r *queryResolver) Todo(ctx context.Context, id string) (*models.TodoResponse, error) {
-	return r.TodoUsecase.Get(ctx, &models.TodoGetRequest{ID: id})
+func (r *queryResolver) Todo(ctx context.Context, id string) (*model.TodoResponse, error) {
+	return r.TodoUsecase.Get(ctx, &model.TodoGetRequest{ID: id})
 }
 
 // Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context, page *int, size *int) ([]*models.TodoResponse, error) {
+func (r *queryResolver) Todos(ctx context.Context, page *int, size *int) ([]*model.TodoResponse, error) {
 	panic(fmt.Errorf("not implemented: Todos - todos"))
 }
 
