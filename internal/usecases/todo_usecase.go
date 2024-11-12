@@ -19,13 +19,13 @@ import (
 
 type TodoUsecase struct {
 	DB             *gorm.DB
-	Cache          *cache.Cache
+	Cache          *cache.ImplCache
 	Log            *logrus.Logger
 	Validate       *validator.Validate
 	TodoRepository *repositories.TodoRepository
 }
 
-func NewTodoUsecase(db *gorm.DB, c *cache.Cache, log *logrus.Logger, validate *validator.Validate, todoRepository *repositories.TodoRepository) *TodoUsecase {
+func NewTodoUsecase(db *gorm.DB, c *cache.ImplCache, log *logrus.Logger, validate *validator.Validate, todoRepository *repositories.TodoRepository) *TodoUsecase {
 	return &TodoUsecase{
 		DB:             db,
 		Cache:          c,

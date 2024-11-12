@@ -4,6 +4,8 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/cache"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/handler"
+	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/resolvers"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/auth"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/middleware"
@@ -16,7 +18,7 @@ import (
 
 type BootstrapConfig struct {
 	DB       *gorm.DB
-	Cache    *cache.Cache
+	Cache    *cache.ImplCache
 	App      *echo.Echo
 	Log      *logrus.Logger
 	Validate *validator.Validate
@@ -39,12 +41,17 @@ func Bootstrap(config *BootstrapConfig) {
 	todoHandler := http.NewTodoHandler(config.Log, todoUsecase)
 	userHandler := http.NewUserHandler(config.Log, userUsecase)
 
+	// Setup graphql handler
+	resolver := resolvers.NewResolver(todoUsecase)
+	graphQLHandler := handler.NewGraphQLHandler(resolver)
+
 	// Setup middleware
 	authMiddleware := middleware.AuthMiddleware(jwtService)
 
 	// Setup routes
 	routeConfig := &route.Config{
 		App:            config.App,
+		GraphQLHandler: graphQLHandler,
 		TodoHandler:    todoHandler,
 		UserHandler:    userHandler,
 		AuthMiddleware: authMiddleware,

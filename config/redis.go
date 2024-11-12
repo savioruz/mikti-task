@@ -10,11 +10,11 @@ import (
 )
 
 type RedisConfig struct {
-	client *cache.Cache
+	client *cache.ImplCache
 }
 
 // NewRedisClient creates a new redis client
-func NewRedisClient(viper *viper.Viper, log *logrus.Logger) *cache.Cache {
+func NewRedisClient(viper *viper.Viper, log *logrus.Logger) *cache.ImplCache {
 	addr := fmt.Sprintf("%s:%s", viper.GetString("REDIS_HOST"), viper.GetString("REDIS_PORT"))
 	client := redis.NewClient(&redis.Options{
 		Addr:     addr,
