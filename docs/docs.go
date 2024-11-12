@@ -418,6 +418,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "model.Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "model.LoginRequest": {
             "type": "object",
             "required": [
@@ -433,14 +444,6 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 8
-                }
-            }
-        },
-        "model.Message": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
                 }
             }
         },
@@ -502,8 +505,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "data": {},
-                "message": {
-                    "$ref": "#/definitions/model.Message"
+                "error": {
+                    "$ref": "#/definitions/model.Error"
                 },
                 "paging": {
                     "$ref": "#/definitions/model.PageMetadata"
@@ -519,8 +522,8 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.TodoResponse"
                     }
                 },
-                "message": {
-                    "$ref": "#/definitions/model.Message"
+                "error": {
+                    "$ref": "#/definitions/model.Error"
                 },
                 "paging": {
                     "$ref": "#/definitions/model.PageMetadata"
@@ -533,8 +536,8 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/model.TodoResponse"
                 },
-                "message": {
-                    "$ref": "#/definitions/model.Message"
+                "error": {
+                    "$ref": "#/definitions/model.Error"
                 },
                 "paging": {
                     "$ref": "#/definitions/model.PageMetadata"
@@ -547,8 +550,8 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/model.TokenResponse"
                 },
-                "message": {
-                    "$ref": "#/definitions/model.Message"
+                "error": {
+                    "$ref": "#/definitions/model.Error"
                 },
                 "paging": {
                     "$ref": "#/definitions/model.PageMetadata"
@@ -561,8 +564,8 @@ const docTemplate = `{
                 "data": {
                     "$ref": "#/definitions/model.UserResponse"
                 },
-                "message": {
-                    "$ref": "#/definitions/model.Message"
+                "error": {
+                    "$ref": "#/definitions/model.Error"
                 },
                 "paging": {
                     "$ref": "#/definitions/model.PageMetadata"

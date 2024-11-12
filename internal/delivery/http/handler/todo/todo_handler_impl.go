@@ -1,7 +1,6 @@
 package todo
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/handler"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
@@ -51,9 +50,7 @@ func (h *TodoHandlerImpl) Create(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusCreated, model.Response[*model.TodoResponse]{
-		Data: response,
-	})
+	return ctx.JSON(http.StatusCreated, model.NewResponse(response, nil))
 }
 
 // GetByID function is a handler to get todo by ID
@@ -88,9 +85,7 @@ func (h *TodoHandlerImpl) GetByID(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, model.Response[*model.TodoResponse]{
-		Data: response,
-	})
+	return ctx.JSON(http.StatusOK, model.NewResponse(response, nil))
 }
 
 // Update function is a handler to update todo
@@ -127,9 +122,7 @@ func (h *TodoHandlerImpl) Update(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, model.Response[*model.TodoResponse]{
-		Data: response,
-	})
+	return ctx.JSON(http.StatusOK, model.NewResponse(response, nil))
 }
 
 // Delete function is a handler to delete todo
@@ -164,12 +157,7 @@ func (h *TodoHandlerImpl) Delete(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, model.Response[*model.TodoResponse]{
-		Data: nil,
-		Message: &model.Message{
-			Message: fmt.Sprintf("todo with ID %s has been deleted", request.ID),
-		},
-	})
+	return ctx.JSON(http.StatusNoContent, nil)
 }
 
 // GetAll function is a handler to list todo

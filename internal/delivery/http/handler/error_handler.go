@@ -16,7 +16,5 @@ var (
 )
 
 func HandleError(c echo.Context, status int, err error) error {
-	return c.JSON(status, model.Response[any]{
-		Message: &model.Message{Message: err.Error()},
-	})
+	return c.JSON(status, model.NewErrorResponse[any](status, err.Error()))
 }

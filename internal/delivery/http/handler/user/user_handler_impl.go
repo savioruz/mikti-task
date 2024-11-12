@@ -52,9 +52,7 @@ func (h *UserHandlerImpl) Register(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusCreated, model.Response[*model.UserResponse]{
-		Data: response,
-	})
+	return ctx.JSON(http.StatusCreated, model.NewResponse(response, nil))
 }
 
 // Login function is a handler to login a user
@@ -88,9 +86,7 @@ func (h *UserHandlerImpl) Login(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, model.Response[*model.TokenResponse]{
-		Data: response,
-	})
+	return ctx.JSON(http.StatusOK, model.NewResponse(response, nil))
 }
 
 // Refresh function is a handler to refresh token
@@ -124,7 +120,5 @@ func (h *UserHandlerImpl) Refresh(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, model.Response[*model.TokenResponse]{
-		Data: response,
-	})
+	return ctx.JSON(http.StatusOK, model.NewResponse(response, nil))
 }

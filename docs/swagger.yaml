@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  model.Error:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
   model.LoginRequest:
     properties:
       email:
@@ -12,11 +19,6 @@ definitions:
     required:
     - email
     - password
-    type: object
-  model.Message:
-    properties:
-      message:
-        type: string
     type: object
   model.PageMetadata:
     properties:
@@ -58,8 +60,8 @@ definitions:
   model.Response-any:
     properties:
       data: {}
-      message:
-        $ref: '#/definitions/model.Message'
+      error:
+        $ref: '#/definitions/model.Error'
       paging:
         $ref: '#/definitions/model.PageMetadata'
     type: object
@@ -69,8 +71,8 @@ definitions:
         items:
           $ref: '#/definitions/model.TodoResponse'
         type: array
-      message:
-        $ref: '#/definitions/model.Message'
+      error:
+        $ref: '#/definitions/model.Error'
       paging:
         $ref: '#/definitions/model.PageMetadata'
     type: object
@@ -78,8 +80,8 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.TodoResponse'
-      message:
-        $ref: '#/definitions/model.Message'
+      error:
+        $ref: '#/definitions/model.Error'
       paging:
         $ref: '#/definitions/model.PageMetadata'
     type: object
@@ -87,8 +89,8 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.TokenResponse'
-      message:
-        $ref: '#/definitions/model.Message'
+      error:
+        $ref: '#/definitions/model.Error'
       paging:
         $ref: '#/definitions/model.PageMetadata'
     type: object
@@ -96,8 +98,8 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.UserResponse'
-      message:
-        $ref: '#/definitions/model.Message'
+      error:
+        $ref: '#/definitions/model.Error'
       paging:
         $ref: '#/definitions/model.PageMetadata'
     type: object

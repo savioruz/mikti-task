@@ -1,12 +1,13 @@
 package model
 
 type Response[T any] struct {
-	Data    T             `json:"data,omitempty"`
-	Message *Message      `json:"message,omitempty"`
-	Paging  *PageMetadata `json:"paging,omitempty"`
+	Data   *T            `json:"data,omitempty"`
+	Paging *PageMetadata `json:"paging,omitempty"`
+	Error  *Error        `json:"error,omitempty"`
 }
 
-type Message struct {
+type Error struct {
+	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
@@ -15,4 +16,20 @@ type PageMetadata struct {
 	Size       int `json:"size"`
 	TotalItems int `json:"total_items"`
 	TotalPages int `json:"total_pages"`
+}
+
+func NewResponse[T any](data T, paging *PageMetadata) *Response[T] {
+	return &Response[T]{
+		Data:   &data,
+		Paging: paging,
+	}
+}
+
+func NewErrorResponse[T any](code int, message string) *Response[T] {
+	return &Response[T]{
+		Error: &Error{
+			Code:    code,
+			Message: message,
+		},
+	}
 }

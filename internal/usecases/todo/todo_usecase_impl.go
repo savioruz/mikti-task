@@ -203,15 +203,14 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 	if len(cachedData) > 0 && totalItems > 0 {
 		u.Log.Infof("Data retrieved from cache")
 		totalPages := (totalItems + request.Size - 1) / request.Size
-		return &model.Response[[]*model.TodoResponse]{
-			Data: cachedData,
-			Paging: &model.PageMetadata{
-				Page:       request.Page,
-				Size:       request.Size,
-				TotalItems: totalItems,
-				TotalPages: totalPages,
-			},
-		}, nil
+		response := model.NewResponse(cachedData, &model.PageMetadata{
+			Page:       request.Page,
+			Size:       request.Size,
+			TotalItems: totalItems,
+			TotalPages: totalPages,
+		})
+
+		return response, nil
 	}
 
 	// If cache miss, get data from database
@@ -240,15 +239,12 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 	}
 
 	totalPages := (int(dbTotalItems) + request.Size - 1) / request.Size
-	response := &model.Response[[]*model.TodoResponse]{
-		Data: todoResponses,
-		Paging: &model.PageMetadata{
-			Page:       request.Page,
-			Size:       request.Size,
-			TotalItems: int(dbTotalItems),
-			TotalPages: totalPages,
-		},
-	}
+	response := model.NewResponse(todoResponses, &model.PageMetadata{
+		Page:       request.Page,
+		Size:       request.Size,
+		TotalItems: int(dbTotalItems),
+		TotalPages: totalPages,
+	})
 
 	return response, nil
 }

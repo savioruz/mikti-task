@@ -321,7 +321,7 @@ func TestDeleteTodo(t *testing.T) {
 	err = json.Unmarshal(deleteBytes, &deleteRawResponse)
 	assert.Nil(t, err)
 
-	assert.Equal(t, http.StatusOK, deleteResponse.StatusCode)
+	assert.Equal(t, http.StatusNoContent, deleteResponse.StatusCode)
 	assert.Equal(t, "todo with ID "+todoID+" has been deleted", deleteRawResponse["message"].(map[string]interface{})["message"])
 }
 
