@@ -106,31 +106,31 @@ func (u *TodoUsecaseImpl) Update(ctx context.Context, id *model.TodoUpdateIDRequ
 	return converter.TodoToResponse(todoData), nil
 }
 
-func (u *TodoUsecaseImpl) Delete(ctx context.Context, request *model.TodoDeleteRequest) error {
+func (u *TodoUsecaseImpl) Delete(ctx context.Context, request *model.TodoDeleteRequest) (bool, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
 	if err := u.Validate.Struct(request); err != nil {
-		return errors.New(http.StatusText(http.StatusBadRequest))
+		return false, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
 	todoData := &entity.Todo{}
 	if err := u.TodoRepository.GetByID(tx, todoData, request.ID); err != nil {
 		u.Log.Errorf("failed to get todo: %v", err)
-		return errors.New(http.StatusText(http.StatusNotFound))
+		return false, errors.New(http.StatusText(http.StatusNotFound))
 	}
 
 	if err := u.TodoRepository.Delete(tx, todoData); err != nil {
 		u.Log.Errorf("failed to delete todo: %v", err)
-		return errors.New(http.StatusText(http.StatusInternalServerError))
+		return false, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		u.Log.Errorf("failed to commit transaction: %v", err)
-		return errors.New(http.StatusText(http.StatusInternalServerError))
+		return false, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
-	return nil
+	return true, nil
 }
 
 func (u *TodoUsecaseImpl) Get(ctx context.Context, request *model.TodoGetRequest) (*model.TodoResponse, error) {

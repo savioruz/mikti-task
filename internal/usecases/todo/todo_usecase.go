@@ -10,5 +10,5 @@ type TodoUsecase interface {
 	Update(ctx context.Context, request *model.TodoUpdateIDRequest, update *model.TodoUpdateRequest) (*model.TodoResponse, error)
 	Get(ctx context.Context, request *model.TodoGetRequest) (*model.TodoResponse, error)
 	GetAll(ctx context.Context, request *model.TodoGetAllRequest) (*model.Response[[]*model.TodoResponse], error)
-	Delete(ctx context.Context, request *model.TodoDeleteRequest) error
+	Delete(ctx context.Context, request *model.TodoDeleteRequest) (bool, error)
 }

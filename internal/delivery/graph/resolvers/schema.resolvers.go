@@ -6,15 +6,14 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph"
+	graphmodel "github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/model"
 	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
 )
 
 // CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.TodoCreateRequest) (*model.TodoResponse, error) {
-	return r.TodoUsecase.Create(ctx, &input)
+func (r *mutationResolver) CreateTodo(ctx context.Context, title string) (*model.TodoResponse, error) {
+	return r.TodoUsecase.Create(ctx, &model.TodoCreateRequest{Title: title})
 }
 
 // UpdateTodo is the resolver for the updateTodo field.
@@ -29,7 +28,12 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input mode
 
 // DeleteTodo is the resolver for the deleteTodo field.
 func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteTodo - deleteTodo"))
+	d, err := r.TodoUsecase.Delete(ctx, &model.TodoDeleteRequest{ID: id})
+	if err != nil {
+		return false, err
+	}
+
+	return d, nil
 }
 
 // Todo is the resolver for the todo field.
@@ -38,8 +42,34 @@ func (r *queryResolver) Todo(ctx context.Context, id string) (*model.TodoRespons
 }
 
 // Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context, page *int, size *int) ([]*model.TodoResponse, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+func (r *queryResolver) Todos(ctx context.Context, page *int, size *int) (*graphmodel.TodoResponse, error) {
+	var paginated *model.Response[[]*model.TodoResponse]
+	var err error
+	if page != nil && size != nil {
+		paginated, err = r.TodoUsecase.GetAll(ctx, &model.TodoGetAllRequest{
+			Page: *page,
+			Size: *size,
+		})
+	} else {
+		paginated, err = r.TodoUsecase.GetAll(ctx, &model.TodoGetAllRequest{
+			Page: 1,
+			Size: 10,
+		})
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &graphmodel.TodoResponse{
+		Data: *paginated.Data,
+		Paging: &graphmodel.PageMetadata{
+			Page:       paginated.Paging.Page,
+			Size:       paginated.Paging.Size,
+			TotalItems: paginated.Paging.TotalItems,
+			TotalPages: paginated.Paging.TotalPages,
+		},
+	}, nil
 }
 
 // Mutation returns graph.MutationResolver implementation.

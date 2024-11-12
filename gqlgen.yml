@@ -18,7 +18,7 @@ exec:
 # Where should any generated models go?
 model:
   filename: internal/delivery/graph/model/model.go
-  package: graph
+  package: graphmodel
 
 # Where should the resolver implementations go?
 resolver:

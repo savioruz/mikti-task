@@ -144,7 +144,7 @@ func (h *TodoHandlerImpl) Delete(ctx echo.Context) error {
 		return handler.HandleError(ctx, http.StatusBadRequest, handler.ErrorBindingRequest)
 	}
 
-	err := h.Todo.Delete(ctx.Request().Context(), request)
+	_, err := h.Todo.Delete(ctx.Request().Context(), request)
 	if err != nil {
 		h.Log.Errorf("failed to delete todo: %v", err)
 		switch {

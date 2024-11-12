@@ -3,29 +3,43 @@
 # https://gqlgen.com/getting-started/
 
 type Todo {
-  id: ID!
-  title: String!
-  completed: Boolean!
-  created_at: String!
-  updated_at: String!
+    id: ID!
+    title: String!
+    completed: Boolean!
+    createdAt: String!
+    updatedAt: String!
 }
 
-input TodoCreateInput {
-  title: String!
+type PageMetadata {
+    page: Int!
+    size: Int!
+    totalItems: Int!
+    totalPages: Int!
+}
+
+type Error {
+    code: Int!
+    message: String!
+}
+
+type TodoResponse {
+    data: [Todo!]
+    paging: PageMetadata!
+    error: Error
 }
 
 input TodoUpdateInput {
-  title: String
-  completed: Boolean
+    title: String
+    completed: Boolean
 }
 
 type Query {
-  todo(id: ID!): Todo
-  todos(page: Int, size: Int): [Todo!]!
+    todo(id: ID!): Todo
+    todos(page: Int = 1, size: Int = 10): TodoResponse!
 }
 
 type Mutation {
-    createTodo(input: TodoCreateInput!): Todo!
+    createTodo(title: String!): Todo!
     updateTodo(id: ID!, input: TodoUpdateInput!): Todo!
     deleteTodo(id: ID!): Boolean!
 }
