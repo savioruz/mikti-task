@@ -1,8 +1,8 @@
 package todo
 
 import (
-	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/entity"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/repositories"
+	"github.com/savioruz/mikti-task/internal/domain/entity"
+	"github.com/savioruz/mikti-task/internal/repositories"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )

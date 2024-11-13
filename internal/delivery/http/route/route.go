@@ -3,9 +3,9 @@ package route
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/handler"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/handler/todo"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/handler/user"
+	"github.com/savioruz/mikti-task/internal/delivery/graph/handler"
+	"github.com/savioruz/mikti-task/internal/delivery/http/handler/todo"
+	"github.com/savioruz/mikti-task/internal/delivery/http/handler/user"
 	swagger "github.com/swaggo/echo-swagger"
 )
 

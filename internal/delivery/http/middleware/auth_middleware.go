@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/platform/jwt"
+	"github.com/savioruz/mikti-task/internal/domain/model"
+	"github.com/savioruz/mikti-task/internal/platform/jwt"
 	"net/http"
 	"strings"
 )

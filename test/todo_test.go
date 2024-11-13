@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
+	"github.com/savioruz/mikti-task/internal/domain/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -142,7 +142,7 @@ func TestCreateTodoUnauthorized(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
-	assert.Equal(t, "Missing authorization header", rawResponse["message"])
+	assert.Equal(t, "Missing authorization header", rawResponse["error"].(map[string]interface{})["message"])
 }
 
 func TestCreateTodoValidationError(t *testing.T) {
@@ -254,7 +254,7 @@ func TestUpdateTodoUnauthorized(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusUnauthorized, updateResponse.StatusCode)
-	assert.Equal(t, "Missing authorization header", updateRawResponse["message"])
+	assert.Equal(t, "Missing authorization header", updateRawResponse["error"].(map[string]interface{})["message"])
 }
 
 func TestUpdateTodoValidationError(t *testing.T) {
@@ -339,7 +339,7 @@ func TestDeleteTodoUnauthorized(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusUnauthorized, deleteResponse.StatusCode)
-	assert.Equal(t, "Missing authorization header", deleteRawResponse["message"])
+	assert.Equal(t, "Missing authorization header", deleteRawResponse["error"].(map[string]interface{})["message"])
 }
 
 func TestDeleteTodoNotFound(t *testing.T) {
@@ -426,7 +426,7 @@ func TestGetTodoUnauthorized(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusUnauthorized, getResponse.StatusCode)
-	assert.Equal(t, "Missing authorization header", getRawResponse["message"])
+	assert.Equal(t, "Missing authorization header", getRawResponse["error"].(map[string]interface{})["message"])
 }
 
 func TestGetTodoNotFound(t *testing.T) {

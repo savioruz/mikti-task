@@ -1,7 +1,7 @@
 package resolvers
 
 import (
-	"github.com/savioruz/mikti-task/tree/week-4/internal/usecases/todo"
+	"github.com/savioruz/mikti-task/internal/usecases/todo"
 )
 
 // This file will not be regenerated automatically.

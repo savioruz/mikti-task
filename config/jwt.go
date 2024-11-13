@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/savioruz/mikti-task/tree/week-4/internal/platform/jwt"
+	"github.com/savioruz/mikti-task/internal/platform/jwt"
 	"github.com/spf13/viper"
 )
 

@@ -3,7 +3,7 @@ package test
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/entity"
+	"github.com/savioruz/mikti-task/internal/domain/entity"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

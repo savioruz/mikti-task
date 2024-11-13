@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/platform/cache"
+	"github.com/savioruz/mikti-task/internal/platform/cache"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )

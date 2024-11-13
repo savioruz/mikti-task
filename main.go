@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/savioruz/mikti-task/tree/week-4/config"
-	_ "github.com/savioruz/mikti-task/tree/week-4/docs"
+	"github.com/savioruz/mikti-task/config"
+	_ "github.com/savioruz/mikti-task/docs"
 	"time"
 )
 

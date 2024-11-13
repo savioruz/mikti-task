@@ -2,9 +2,9 @@ package user
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/http/handler"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/usecases/user"
+	"github.com/savioruz/mikti-task/internal/delivery/http/handler"
+	"github.com/savioruz/mikti-task/internal/domain/model"
+	"github.com/savioruz/mikti-task/internal/usecases/user"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )

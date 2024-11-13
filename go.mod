@@ -1,4 +1,4 @@
-module github.com/savioruz/mikti-task/tree/week-4
+module github.com/savioruz/mikti-task
 
 go 1.23.1
 

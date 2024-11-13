@@ -2,7 +2,7 @@ package todo
 
 import (
 	"context"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
+	"github.com/savioruz/mikti-task/internal/domain/model"
 )
 
 type TodoUsecase interface {

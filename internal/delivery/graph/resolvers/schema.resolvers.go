@@ -6,9 +6,9 @@ package resolvers
 
 import (
 	"context"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph"
-	graphmodel "github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/model"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
+	"github.com/savioruz/mikti-task/internal/delivery/graph"
+	graphmodel "github.com/savioruz/mikti-task/internal/delivery/graph/model"
+	"github.com/savioruz/mikti-task/internal/domain/model"
 )
 
 type mutationResolver struct{ *Resolver }

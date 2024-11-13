@@ -14,8 +14,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	graphmodel "github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/model"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
+	graphmodel "github.com/savioruz/mikti-task/internal/delivery/graph/model"
+	"github.com/savioruz/mikti-task/internal/domain/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )

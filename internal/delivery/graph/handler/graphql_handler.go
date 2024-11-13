@@ -4,8 +4,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph"
-	"github.com/savioruz/mikti-task/tree/week-4/internal/delivery/graph/resolvers"
+	"github.com/savioruz/mikti-task/internal/delivery/graph"
+	"github.com/savioruz/mikti-task/internal/delivery/graph/resolvers"
 )
 
 type GraphQLHandler struct {
