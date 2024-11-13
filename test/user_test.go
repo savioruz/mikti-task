@@ -82,7 +82,7 @@ func TestRegisterValidationError(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-	assert.Equal(t, "validation error", rawResponse["error"])
+	assert.Equal(t, "validation error", rawResponse["error"].(map[string]interface{})["message"])
 	assert.NotNil(t, rawResponse["error"])
 }
 
@@ -241,7 +241,7 @@ func TestLoginValidationError(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-	assert.Equal(t, "validation error", rawResponse["error"])
+	assert.Equal(t, "validation error", rawResponse["error"].(map[string]interface{})["message"])
 	assert.NotNil(t, rawResponse["error"])
 }
 
@@ -275,7 +275,7 @@ func TestLoginWrongEmail(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
-	assert.Equal(t, "unauthorized", rawResponse["error"])
+	assert.Equal(t, "unauthorized", rawResponse["error"].(map[string]interface{})["message"])
 	assert.NotNil(t, rawResponse["error"])
 }
 
@@ -309,7 +309,7 @@ func TestLoginWrongPassword(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
-	assert.Equal(t, "unauthorized", rawResponse["error"])
+	assert.Equal(t, "unauthorized", rawResponse["error"].(map[string]interface{})["message"])
 	assert.NotNil(t, rawResponse["error"])
 }
 
@@ -398,7 +398,7 @@ func TestRefreshTokenValidationError(t *testing.T) {
 	err = json.Unmarshal(b, &rawResponse)
 
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-	assert.Equal(t, "validation error", rawResponse["error"])
+	assert.Equal(t, "validation error", rawResponse["error"].(map[string]interface{})["message"])
 	assert.NotNil(t, rawResponse["error"])
 }
 
@@ -430,7 +430,7 @@ func TestRefreshTokenUnauthorized(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
-	assert.Equal(t, "unauthorized", rawResponse["error"])
+	assert.Equal(t, "unauthorized", rawResponse["error"].(map[string]interface{})["message"])
 	assert.NotNil(t, rawResponse["error"])
 }
 
@@ -462,7 +462,7 @@ func TestRegisterBindError(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-	assert.Equal(t, "failed to bind request", rawResponse["error"])
+	assert.Equal(t, "failed to bind request", rawResponse["error"].(map[string]interface{})["message"])
 	assert.NotNil(t, rawResponse["error"])
 }
 
@@ -493,8 +493,7 @@ func TestLoginBindError(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-	assert.Equal(t, "failed to bind request", rawResponse["error"])
-	assert.NotNil(t, rawResponse["error"])
+	assert.Equal(t, "failed to bind request", rawResponse["error"].(map[string]interface{})["message"])
 }
 
 func TestRefreshTokenBindError(t *testing.T) {
@@ -523,8 +522,7 @@ func TestRefreshTokenBindError(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-	assert.Equal(t, "failed to bind request", rawResponse["error"])
-	assert.NotNil(t, rawResponse["error"])
+	assert.Equal(t, "failed to bind request", rawResponse["error"].(map[string]interface{})["message"])
 }
 
 // mock db error

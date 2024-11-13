@@ -10,7 +10,7 @@ critic:
 security:
 	gosec ./...
 
-test: clean security
+test: clean critic security
 	go test -v -timeout 180s -coverprofile=cover.out -cover ./internal/... ./test/...
 	go tool cover -func=cover.out
 

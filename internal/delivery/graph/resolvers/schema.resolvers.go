@@ -11,6 +11,9 @@ import (
 	"github.com/savioruz/mikti-task/tree/week-4/internal/domain/model"
 )
 
+type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }
+
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, title string) (*model.TodoResponse, error) {
 	return r.TodoUsecase.Create(ctx, &model.TodoCreateRequest{Title: title})
@@ -42,7 +45,7 @@ func (r *queryResolver) Todo(ctx context.Context, id string) (*model.TodoRespons
 }
 
 // Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context, page *int, size *int) (*graphmodel.TodoResponse, error) {
+func (r *queryResolver) Todos(ctx context.Context, page, size *int) (*graphmodel.TodoResponse, error) {
 	var paginated *model.Response[[]*model.TodoResponse]
 	var err error
 	if page != nil && size != nil {
@@ -77,6 +80,3 @@ func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{
 
 // Query returns graph.QueryResolver implementation.
 func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
-
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }

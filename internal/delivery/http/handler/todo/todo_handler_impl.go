@@ -14,10 +14,10 @@ type TodoHandlerImpl struct {
 	Todo todo.TodoUsecase
 }
 
-func NewTodoHandlerImpl(log *logrus.Logger, todo todo.TodoUsecase) *TodoHandlerImpl {
+func NewTodoHandlerImpl(log *logrus.Logger, t todo.TodoUsecase) *TodoHandlerImpl {
 	return &TodoHandlerImpl{
 		Log:  log,
-		Todo: todo,
+		Todo: t,
 	}
 }
 

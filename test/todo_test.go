@@ -176,7 +176,7 @@ func TestCreateTodoValidationError(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-	assert.Equal(t, "validation error", rawResponse["error"])
+	assert.Equal(t, "validation error", rawResponse["error"].(map[string]interface{})["message"])
 }
 
 func TestUpdateTodo(t *testing.T) {
@@ -293,7 +293,7 @@ func TestUpdateTodoValidationError(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusBadRequest, updateResponse.StatusCode)
-	assert.Equal(t, "validation error", updateRawResponse["error"])
+	assert.Equal(t, "validation error", updateRawResponse["error"].(map[string]interface{})["message"])
 }
 
 func TestDeleteTodo(t *testing.T) {
@@ -312,17 +312,7 @@ func TestDeleteTodo(t *testing.T) {
 	app.ServeHTTP(deleteRecorder, deleteRequest)
 
 	deleteResponse := deleteRecorder.Result()
-	deleteBytes, err := io.ReadAll(deleteResponse.Body)
-	assert.Nil(t, err)
-
-	t.Logf("Response Body: %s", string(deleteBytes))
-
-	var deleteRawResponse map[string]interface{}
-	err = json.Unmarshal(deleteBytes, &deleteRawResponse)
-	assert.Nil(t, err)
-
 	assert.Equal(t, http.StatusNoContent, deleteResponse.StatusCode)
-	assert.Equal(t, "todo with ID "+todoID+" has been deleted", deleteRawResponse["message"].(map[string]interface{})["message"])
 }
 
 func TestDeleteTodoUnauthorized(t *testing.T) {
@@ -377,7 +367,7 @@ func TestDeleteTodoNotFound(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusNotFound, deleteResponse.StatusCode)
-	assert.Equal(t, "not found", deleteRawResponse["error"])
+	assert.Equal(t, "not found", deleteRawResponse["error"].(map[string]interface{})["message"])
 }
 
 func TestGetTodo(t *testing.T) {
@@ -464,7 +454,7 @@ func TestGetTodoNotFound(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusNotFound, getResponse.StatusCode)
-	assert.Equal(t, "not found", getRawResponse["error"])
+	assert.Equal(t, "not found", getRawResponse["error"].(map[string]interface{})["message"])
 }
 
 func TestListTodo(t *testing.T) {

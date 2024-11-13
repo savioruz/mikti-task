@@ -12,8 +12,8 @@ type Resolver struct {
 	TodoUsecase todo.TodoUsecase
 }
 
-func NewResolver(todo todo.TodoUsecase) *Resolver {
+func NewResolver(t todo.TodoUsecase) *Resolver {
 	return &Resolver{
-		TodoUsecase: todo,
+		TodoUsecase: t,
 	}
 }

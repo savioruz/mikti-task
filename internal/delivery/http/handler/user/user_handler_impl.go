@@ -14,10 +14,10 @@ type UserHandlerImpl struct {
 	User user.UserUsecase
 }
 
-func NewUserHandlerImpl(log *logrus.Logger, user user.UserUsecase) *UserHandlerImpl {
+func NewUserHandlerImpl(log *logrus.Logger, u user.UserUsecase) *UserHandlerImpl {
 	return &UserHandlerImpl{
 		Log:  log,
-		User: user,
+		User: u,
 	}
 }
 
