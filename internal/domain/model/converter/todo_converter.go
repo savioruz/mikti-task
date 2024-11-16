@@ -9,7 +9,7 @@ func TodoToResponse(todo *entity.Todo) *model.TodoResponse {
 	return &model.TodoResponse{
 		ID:        todo.ID,
 		Title:     todo.Title,
-		Completed: todo.Completed,
+		Done:      todo.Done,
 		CreatedAt: todo.CreatedAt.String(),
 		UpdatedAt: todo.UpdatedAt.String(),
 	}

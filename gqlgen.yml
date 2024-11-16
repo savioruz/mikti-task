@@ -97,10 +97,10 @@ models:
       - github.com/99designs/gqlgen/graphql.Int32
   Todo:
     model:
-      - github.com/savioruz/mikti-task/tree/week-4/internal/domain/model.TodoResponse
+      - github.com/savioruz/mikti-task/internal/domain/model.TodoResponse
   TodoCreateInput:
     model:
-      - github.com/savioruz/mikti-task/tree/week-4/internal/domain/model.TodoCreateRequest
+      - github.com/savioruz/mikti-task/internal/domain/model.TodoCreateRequest
   TodoUpdateInput:
     model:
-      - github.com/savioruz/mikti-task/tree/week-4/internal/domain/model.TodoUpdateRequest
+      - github.com/savioruz/mikti-task/internal/domain/model.TodoUpdateRequest

@@ -3,7 +3,7 @@ package model
 type TodoResponse struct {
 	ID        string `json:"id"`
 	Title     string `json:"title"`
-	Completed bool   `json:"completed"`
+	Done      bool   `json:"done"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
@@ -17,8 +17,8 @@ type TodoUpdateIDRequest struct {
 }
 
 type TodoUpdateRequest struct {
-	Title     *string `json:"title,omitempty" validate:"omitempty,gte=5,lte=255"`
-	Completed *bool   `json:"completed,omitempty" validate:"omitempty,boolean"`
+	Title *string `json:"title,omitempty" validate:"omitempty,gte=5,lte=255"`
+	Done  *bool   `json:"done,omitempty" validate:"omitempty,boolean"`
 }
 
 type TodoDeleteRequest struct {

@@ -72,8 +72,8 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
-		Completed func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
+		Done      func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Title     func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
@@ -217,19 +217,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Todos(childComplexity, args["page"].(*int), args["size"].(*int)), true
 
-	case "Todo.completed":
-		if e.complexity.Todo.Completed == nil {
-			break
-		}
-
-		return e.complexity.Todo.Completed(childComplexity), true
-
 	case "Todo.createdAt":
 		if e.complexity.Todo.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.Todo.CreatedAt(childComplexity), true
+
+	case "Todo.done":
+		if e.complexity.Todo.Done == nil {
+			break
+		}
+
+		return e.complexity.Todo.Done(childComplexity), true
 
 	case "Todo.id":
 		if e.complexity.Todo.ID == nil {
@@ -478,7 +478,7 @@ func (ec *executionContext) field_Mutation_updateTodo_argsInput(
 ) (model.TodoUpdateRequest, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNTodoUpdateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoUpdateRequest(ctx, tmp)
+		return ec.unmarshalNTodoUpdateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoUpdateRequest(ctx, tmp)
 	}
 
 	var zeroVal model.TodoUpdateRequest
@@ -742,7 +742,7 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.TodoResponse)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -757,8 +757,8 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 				return ec.fieldContext_Todo_id(ctx, field)
 			case "title":
 				return ec.fieldContext_Todo_title(ctx, field)
-			case "completed":
-				return ec.fieldContext_Todo_completed(ctx, field)
+			case "done":
+				return ec.fieldContext_Todo_done(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Todo_createdAt(ctx, field)
 			case "updatedAt":
@@ -809,7 +809,7 @@ func (ec *executionContext) _Mutation_updateTodo(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.TodoResponse)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -824,8 +824,8 @@ func (ec *executionContext) fieldContext_Mutation_updateTodo(ctx context.Context
 				return ec.fieldContext_Todo_id(ctx, field)
 			case "title":
 				return ec.fieldContext_Todo_title(ctx, field)
-			case "completed":
-				return ec.fieldContext_Todo_completed(ctx, field)
+			case "done":
+				return ec.fieldContext_Todo_done(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Todo_createdAt(ctx, field)
 			case "updatedAt":
@@ -1104,7 +1104,7 @@ func (ec *executionContext) _Query_todo(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(*model.TodoResponse)
 	fc.Result = res
-	return ec.marshalOTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, field.Selections, res)
+	return ec.marshalOTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_todo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1119,8 +1119,8 @@ func (ec *executionContext) fieldContext_Query_todo(ctx context.Context, field g
 				return ec.fieldContext_Todo_id(ctx, field)
 			case "title":
 				return ec.fieldContext_Todo_title(ctx, field)
-			case "completed":
-				return ec.fieldContext_Todo_completed(ctx, field)
+			case "done":
+				return ec.fieldContext_Todo_done(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Todo_createdAt(ctx, field)
 			case "updatedAt":
@@ -1171,7 +1171,7 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(*graphmodel.TodoResponse)
 	fc.Result = res
-	return ec.marshalNTodoResponse2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdeliveryᚋgraphᚋmodelᚐTodoResponse(ctx, field.Selections, res)
+	return ec.marshalNTodoResponse2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdeliveryᚋgraphᚋmodelᚐTodoResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_todos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1423,8 +1423,8 @@ func (ec *executionContext) fieldContext_Todo_title(_ context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_completed(ctx context.Context, field graphql.CollectedField, obj *model.TodoResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Todo_completed(ctx, field)
+func (ec *executionContext) _Todo_done(ctx context.Context, field graphql.CollectedField, obj *model.TodoResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Todo_done(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1437,7 +1437,7 @@ func (ec *executionContext) _Todo_completed(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Completed, nil
+		return obj.Done, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1454,7 +1454,7 @@ func (ec *executionContext) _Todo_completed(ctx context.Context, field graphql.C
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Todo_completed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Todo_done(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Todo",
 		Field:      field,
@@ -1580,7 +1580,7 @@ func (ec *executionContext) _TodoResponse_data(ctx context.Context, field graphq
 	}
 	res := resTmp.([]*model.TodoResponse)
 	fc.Result = res
-	return ec.marshalOTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponseᚄ(ctx, field.Selections, res)
+	return ec.marshalOTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoResponseᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TodoResponse_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1595,8 +1595,8 @@ func (ec *executionContext) fieldContext_TodoResponse_data(_ context.Context, fi
 				return ec.fieldContext_Todo_id(ctx, field)
 			case "title":
 				return ec.fieldContext_Todo_title(ctx, field)
-			case "completed":
-				return ec.fieldContext_Todo_completed(ctx, field)
+			case "done":
+				return ec.fieldContext_Todo_done(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Todo_createdAt(ctx, field)
 			case "updatedAt":
@@ -1636,7 +1636,7 @@ func (ec *executionContext) _TodoResponse_paging(ctx context.Context, field grap
 	}
 	res := resTmp.(*graphmodel.PageMetadata)
 	fc.Result = res
-	return ec.marshalNPageMetadata2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdeliveryᚋgraphᚋmodelᚐPageMetadata(ctx, field.Selections, res)
+	return ec.marshalNPageMetadata2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdeliveryᚋgraphᚋmodelᚐPageMetadata(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TodoResponse_paging(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1687,7 +1687,7 @@ func (ec *executionContext) _TodoResponse_error(ctx context.Context, field graph
 	}
 	res := resTmp.(*graphmodel.Error)
 	fc.Result = res
-	return ec.marshalOError2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdeliveryᚋgraphᚋmodelᚐError(ctx, field.Selections, res)
+	return ec.marshalOError2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdeliveryᚋgraphᚋmodelᚐError(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_TodoResponse_error(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3489,7 +3489,7 @@ func (ec *executionContext) unmarshalInputTodoUpdateInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"title", "completed"}
+	fieldsInOrder := [...]string{"title", "done"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3503,13 +3503,13 @@ func (ec *executionContext) unmarshalInputTodoUpdateInput(ctx context.Context, o
 				return it, err
 			}
 			it.Title = data
-		case "completed":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("completed"))
+		case "done":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("done"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Completed = data
+			it.Done = data
 		}
 	}
 
@@ -3797,8 +3797,8 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "completed":
-			out.Values[i] = ec._Todo_completed(ctx, field, obj)
+		case "done":
+			out.Values[i] = ec._Todo_done(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -4249,7 +4249,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNPageMetadata2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdeliveryᚋgraphᚋmodelᚐPageMetadata(ctx context.Context, sel ast.SelectionSet, v *graphmodel.PageMetadata) graphql.Marshaler {
+func (ec *executionContext) marshalNPageMetadata2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdeliveryᚋgraphᚋmodelᚐPageMetadata(ctx context.Context, sel ast.SelectionSet, v *graphmodel.PageMetadata) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4274,11 +4274,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTodo2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v model.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v model.TodoResponse) graphql.Marshaler {
 	return ec._Todo(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *model.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *model.TodoResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4288,11 +4288,11 @@ func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑta
 	return ec._Todo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNTodoResponse2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdeliveryᚋgraphᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v graphmodel.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNTodoResponse2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdeliveryᚋgraphᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v graphmodel.TodoResponse) graphql.Marshaler {
 	return ec._TodoResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTodoResponse2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdeliveryᚋgraphᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *graphmodel.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNTodoResponse2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdeliveryᚋgraphᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *graphmodel.TodoResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4302,7 +4302,7 @@ func (ec *executionContext) marshalNTodoResponse2ᚖgithubᚗcomᚋsavioruzᚋmi
 	return ec._TodoResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNTodoUpdateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoUpdateRequest(ctx context.Context, v interface{}) (model.TodoUpdateRequest, error) {
+func (ec *executionContext) unmarshalNTodoUpdateInput2githubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoUpdateRequest(ctx context.Context, v interface{}) (model.TodoUpdateRequest, error) {
 	res, err := ec.unmarshalInputTodoUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -4586,7 +4586,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOError2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdeliveryᚋgraphᚋmodelᚐError(ctx context.Context, sel ast.SelectionSet, v *graphmodel.Error) graphql.Marshaler {
+func (ec *executionContext) marshalOError2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdeliveryᚋgraphᚋmodelᚐError(ctx context.Context, sel ast.SelectionSet, v *graphmodel.Error) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -4625,7 +4625,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalOTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalOTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoResponseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TodoResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -4652,7 +4652,7 @@ func (ec *executionContext) marshalOTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmikti�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, sel, v[i])
+			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4672,7 +4672,7 @@ func (ec *executionContext) marshalOTodo2ᚕᚖgithubᚗcomᚋsavioruzᚋmikti�
 	return ret
 }
 
-func (ec *executionContext) marshalOTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋtreeᚋweekᚑ4ᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *model.TodoResponse) graphql.Marshaler {
+func (ec *executionContext) marshalOTodo2ᚖgithubᚗcomᚋsavioruzᚋmiktiᚑtaskᚋinternalᚋdomainᚋmodelᚐTodoResponse(ctx context.Context, sel ast.SelectionSet, v *model.TodoResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

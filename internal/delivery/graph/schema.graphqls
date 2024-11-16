@@ -5,7 +5,7 @@
 type Todo {
     id: ID!
     title: String!
-    completed: Boolean!
+    done: Boolean!
     createdAt: String!
     updatedAt: String!
 }
@@ -30,7 +30,7 @@ type TodoResponse {
 
 input TodoUpdateInput {
     title: String
-    completed: Boolean
+    done: Boolean
 }
 
 type Query {

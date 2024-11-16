@@ -51,10 +51,10 @@ func (u *TodoUsecaseImpl) Create(ctx context.Context, request *model.TodoCreateR
 	}
 
 	todoData := &entity.Todo{
-		ID:        uuid.NewString(),
-		Title:     request.Title,
-		Completed: false,
-		UserID:    claims.UserID,
+		ID:     uuid.NewString(),
+		Title:  request.Title,
+		Done:   false,
+		UserID: claims.UserID,
 	}
 
 	if err := u.TodoRepository.Create(tx, todoData); err != nil {
@@ -76,7 +76,7 @@ func (u *TodoUsecaseImpl) Update(ctx context.Context, id *model.TodoUpdateIDRequ
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
 
-	if request.Completed == nil && request.Title == nil {
+	if request.Done == nil && request.Title == nil {
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
@@ -97,8 +97,8 @@ func (u *TodoUsecaseImpl) Update(ctx context.Context, id *model.TodoUpdateIDRequ
 	if request.Title != nil {
 		todoData.Title = *request.Title
 	}
-	if request.Completed != nil {
-		todoData.Completed = *request.Completed
+	if request.Done != nil {
+		todoData.Done = *request.Done
 	}
 
 	if err := u.TodoRepository.Update(tx, todoData); err != nil {

@@ -6,13 +6,11 @@ package resolvers
 
 import (
 	"context"
+
 	"github.com/savioruz/mikti-task/internal/delivery/graph"
 	graphmodel "github.com/savioruz/mikti-task/internal/delivery/graph/model"
 	"github.com/savioruz/mikti-task/internal/domain/model"
 )
-
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, title string) (*model.TodoResponse, error) {
@@ -45,7 +43,7 @@ func (r *queryResolver) Todo(ctx context.Context, id string) (*model.TodoRespons
 }
 
 // Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context, page, size *int) (*graphmodel.TodoResponse, error) {
+func (r *queryResolver) Todos(ctx context.Context, page *int, size *int) (*graphmodel.TodoResponse, error) {
 	var paginated *model.Response[[]*model.TodoResponse]
 	var err error
 	if page != nil && size != nil {
@@ -80,3 +78,22 @@ func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{
 
 // Query returns graph.QueryResolver implementation.
 func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
+
+type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *todoUpdateInputResolver) Completed(ctx context.Context, obj *model.TodoUpdateRequest, data *bool) error {
+	panic(fmt.Errorf("not implemented: Completed - completed"))
+}
+func (r *Resolver) TodoUpdateInput() graph.TodoUpdateInputResolver {
+	return &todoUpdateInputResolver{r}
+}
+type todoUpdateInputResolver struct{ *Resolver }
+*/
