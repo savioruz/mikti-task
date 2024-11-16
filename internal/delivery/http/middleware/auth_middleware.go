@@ -1,12 +1,15 @@
 package middleware
 
 import (
+	"context"
 	"github.com/labstack/echo/v4"
 	"github.com/savioruz/mikti-task/internal/domain/model"
 	"github.com/savioruz/mikti-task/internal/platform/jwt"
 	"net/http"
 	"strings"
 )
+
+const contextKey = "claims"
 
 func AuthMiddleware(jwtService jwt.JWTService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -30,7 +33,11 @@ func AuthMiddleware(jwtService jwt.JWTService) echo.MiddlewareFunc {
 				return errMessage("Invalid token")
 			}
 
-			c.Set("user", claims)
+			c.Set(contextKey, claims)
+
+			ctx := context.WithValue(c.Request().Context(), contextKey, claims)
+			c.SetRequest(c.Request().WithContext(ctx))
+
 			return next(c)
 		}
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/savioruz/mikti-task/internal/domain/model"
 	"github.com/savioruz/mikti-task/internal/domain/model/converter"
 	"github.com/savioruz/mikti-task/internal/platform/cache"
+	"github.com/savioruz/mikti-task/internal/platform/jwt"
 	"github.com/savioruz/mikti-task/internal/repositories/todo"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -43,10 +44,17 @@ func (u *TodoUsecaseImpl) Create(ctx context.Context, request *model.TodoCreateR
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
+	claims, err := u.getJWTClaims(ctx)
+	if err != nil {
+		u.Log.Errorf("failed to get JWT claims: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusUnauthorized))
+	}
+
 	todoData := &entity.Todo{
 		ID:        uuid.NewString(),
 		Title:     request.Title,
 		Completed: false,
+		UserID:    claims.UserID,
 	}
 
 	if err := u.TodoRepository.Create(tx, todoData); err != nil {
@@ -59,7 +67,7 @@ func (u *TodoUsecaseImpl) Create(ctx context.Context, request *model.TodoCreateR
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
-	u.invalidateListCache()
+	u.invalidateUserListCache(claims.UserID)
 
 	return converter.TodoToResponse(todoData), nil
 }
@@ -173,6 +181,12 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
+	claims, err := u.getJWTClaims(ctx)
+	if err != nil {
+		u.Log.Errorf("failed to get JWT claims: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusUnauthorized))
+	}
+
 	// Ensure valid pagination parameters
 	if request.Size <= 0 {
 		request.Size = 10 // Default page size
@@ -182,12 +196,12 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 	}
 
 	// Cache keys for both data and metadata
-	dataKey := fmt.Sprintf("todos:list:data:%d:%d", request.Page, request.Size)
-	metadataKey := "todos:list:metadata"
+	dataKey := fmt.Sprintf("todos:user:%s:list:data:%d:%d", claims.UserID, request.Page, request.Size)
+	metadataKey := fmt.Sprintf("todos:user:%s:list:metadata", claims.UserID)
 
 	// Try to get cached data
 	var cachedData []*model.TodoResponse
-	err := u.Cache.Get(dataKey, &cachedData)
+	err = u.Cache.Get(dataKey, &cachedData)
 	if err != nil && !errors.Is(err, cache.ErrCacheMiss) {
 		u.Log.Errorf("failed to get data from cache: %v", err)
 	}
@@ -218,7 +232,7 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 	defer tx.Rollback()
 
 	var todos []entity.Todo
-	dbTotalItems, err := u.TodoRepository.GetAll(tx, &todos, request.Page, request.Size)
+	dbTotalItems, err := u.TodoRepository.GetAll(tx, &todos, claims.UserID, request.Page, request.Size)
 	if err != nil {
 		u.Log.Errorf("failed to get todos from database: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusNotFound))
@@ -249,13 +263,21 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 	return response, nil
 }
 
-func (u *TodoUsecaseImpl) invalidateListCache() {
-	if err := u.Cache.Delete("todos:list:metadata"); err != nil {
-		u.Log.Errorf("failed to delete metadata cache: %v", err)
+func (u *TodoUsecaseImpl) invalidateUserListCache(userID string) {
+	if err := u.Cache.Delete(fmt.Sprintf("todos:user:%s:list:metadata", userID)); err != nil {
+		u.Log.Errorf("failed to delete user metadata cache: %v", err)
 	}
 
-	pattern := "todos:list:data:*"
+	pattern := fmt.Sprintf("todos:user:%s:list:data:*", userID)
 	if err := u.Cache.DeletePattern(pattern); err != nil {
-		u.Log.Errorf("failed to delete data caches: %v", err)
+		u.Log.Errorf("failed to delete user data caches: %v", err)
 	}
+}
+
+func (u *TodoUsecaseImpl) getJWTClaims(ctx context.Context) (*jwt.JWTClaims, error) {
+	claims, ok := ctx.Value("claims").(*jwt.JWTClaims)
+	if !ok || claims == nil {
+		return nil, errors.New("unauthorized: invalid or missing JWT claims")
+	}
+	return claims, nil
 }

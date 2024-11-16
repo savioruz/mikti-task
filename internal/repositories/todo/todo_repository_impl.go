@@ -23,7 +23,7 @@ func (r *TodoRepositoryImpl) GetByID(db *gorm.DB, todo *entity.Todo, id string) 
 	return db.Where("id = ?", id).Take(&todo).Error
 }
 
-func (r *TodoRepositoryImpl) GetAll(db *gorm.DB, todos *[]entity.Todo, page, size int) (int64, error) {
+func (r *TodoRepositoryImpl) GetAll(db *gorm.DB, todos *[]entity.Todo, userID string, page, size int) (int64, error) {
 	if page <= 0 {
 		page = 1
 	}
@@ -33,13 +33,15 @@ func (r *TodoRepositoryImpl) GetAll(db *gorm.DB, todos *[]entity.Todo, page, siz
 
 	offset := (page - 1) * size
 
+	query := db.Model(&entity.Todo{}).Where("user_id = ?", userID)
+
 	var totalCount int64
-	countResult := db.Model(&entity.Todo{}).Count(&totalCount)
+	countResult := query.Count(&totalCount)
 	if countResult.Error != nil {
 		return 0, countResult.Error
 	}
 
-	result := db.Offset(offset).Limit(size).Find(todos)
+	result := query.Order("created_at DESC").Offset(offset).Limit(size).Find(todos)
 	if result.Error != nil {
 		return 0, result.Error
 	}

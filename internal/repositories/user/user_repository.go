@@ -8,6 +8,7 @@ import (
 
 type UserRepository interface {
 	repositories.Repository[entity.User]
+	GetFirst(db *gorm.DB, user *entity.User) error
 	GetByID(db *gorm.DB, user *entity.User, id string) error
 	GetByEmail(db *gorm.DB, user *entity.User, email string) error
 	CountByRole(db *gorm.DB, role string) (int64, error)

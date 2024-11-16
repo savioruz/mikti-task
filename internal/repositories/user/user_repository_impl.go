@@ -19,6 +19,10 @@ func NewUserRepository(db *gorm.DB, log *logrus.Logger) *UserRepositoryImpl {
 	}
 }
 
+func (r *UserRepositoryImpl) GetFirst(db *gorm.DB, user *entity.User) error {
+	return db.First(&user).Error
+}
+
 func (r *UserRepositoryImpl) GetByID(db *gorm.DB, user *entity.User, id string) error {
 	return db.Where("id = ?", id).Take(&user).Error
 }
