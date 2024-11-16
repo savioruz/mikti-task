@@ -195,3 +195,40 @@ func (h *TodoHandlerImpl) GetAll(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, response)
 }
+
+// Search function is a handler to search todo
+// @Summary Search todo
+// @Description Search todo
+// @Tags todo
+// @Accept json
+// @Produce json
+// @Param title query string true "Title"
+// @Param page query int false "Page"
+// @Param size query int false "Size"
+// @Success 200 {object} model.Response[[]model.TodoResponse]
+// @Failure 400 {object} model.Response[any]
+// @Failure 500 {object} model.Response[any]
+// @security ApiKeyAuth
+// @Router /todo/search [get]
+func (h *TodoHandlerImpl) Search(ctx echo.Context) error {
+	request := new(model.TodoSearchRequest)
+	if err := ctx.Bind(request); err != nil {
+		h.Log.Errorf("failed to bind request: %v", err)
+		return handler.HandleError(ctx, http.StatusBadRequest, handler.ErrorBindingRequest)
+	}
+
+	response, err := h.Todo.Search(ctx.Request().Context(), request)
+	if err != nil {
+		h.Log.Errorf("failed to search todo: %v", err)
+		switch {
+		case err.Error() == "Bad Request":
+			return handler.HandleError(ctx, http.StatusBadRequest, handler.ErrValidation)
+		case err.Error() == "Not Found":
+			return handler.HandleError(ctx, http.StatusNotFound, handler.ErrNotFound)
+		default:
+			return handler.HandleError(ctx, http.StatusInternalServerError, handler.ErrorInternalServer)
+		}
+	}
+
+	return ctx.JSON(http.StatusOK, response)
+}

@@ -176,6 +176,94 @@ func (u *TodoUsecaseImpl) Get(ctx context.Context, request *model.TodoGetRequest
 	}
 }
 
+func (u *TodoUsecaseImpl) Search(ctx context.Context, request *model.TodoSearchRequest) (*model.Response[[]*model.TodoResponse], error) {
+	if err := u.Validate.Struct(request); err != nil {
+		return nil, errors.New(http.StatusText(http.StatusBadRequest))
+	}
+
+	claims, err := u.getJWTClaims(ctx)
+	if err != nil {
+		u.Log.Errorf("failed to get JWT claims: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusUnauthorized))
+	}
+
+	// Ensure valid pagination parameters
+	if request.Size <= 0 {
+		request.Size = 10 // Default page size
+	}
+	if request.Page <= 0 {
+		request.Page = 1 // Default page number
+	}
+
+	// Cache keys for both data and metadata
+	dataKey := fmt.Sprintf("todos:user:%s:search:data:%s:%d:%d", claims.UserID, request.Title, request.Page, request.Size)
+	metadataKey := fmt.Sprintf("todos:user:%s:search:metadata:%s", claims.UserID, request.Title)
+
+	// Try to get cached data
+	var cachedData []*model.TodoResponse
+	err = u.Cache.Get(dataKey, &cachedData)
+	if err != nil && !errors.Is(err, cache.ErrCacheMiss) {
+		u.Log.Errorf("failed to get data from cache: %v", err)
+	}
+
+	// Try to get cached metadata
+	var totalItems int
+	err = u.Cache.Get(metadataKey, &totalItems)
+	if err != nil && !errors.Is(err, cache.ErrCacheMiss) {
+		u.Log.Errorf("failed to get metadata from cache: %v", err)
+	}
+
+	// If we have both cached data and metadata, return them
+	if len(cachedData) > 0 && totalItems > 0 {
+		u.Log.Infof("Data retrieved from cache")
+		totalPages := (totalItems + request.Size - 1) / request.Size
+		response := model.NewResponse(cachedData, &model.PageMetadata{
+			Page:       request.Page,
+			Size:       request.Size,
+			TotalItems: totalItems,
+			TotalPages: totalPages,
+		})
+
+		return response, nil
+	}
+
+	// If cache miss, get data from database
+	tx := u.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	var todos []entity.Todo
+	dbTotalItems, err := u.TodoRepository.GetByTitle(tx, &todos, request.Title, claims.UserID, request.Page, request.Size)
+	if err != nil {
+		u.Log.Errorf("failed to get todos from database: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusNotFound))
+	}
+
+	if dbTotalItems == 0 || len(todos) == 0 {
+		return nil, errors.New(http.StatusText(http.StatusNotFound))
+	}
+
+	todoResponses := converter.TodosToResponses(todos)
+
+	// Cache both the data for this page and the total count
+	if err := u.Cache.Set(dataKey, todoResponses, 5*time.Minute); err != nil {
+		u.Log.Errorf("failed to set data to cache: %v", err)
+	}
+
+	if err := u.Cache.Set(metadataKey, int(dbTotalItems), 5*time.Minute); err != nil {
+		u.Log.Errorf("failed to set metadata to cache: %v", err)
+	}
+
+	totalPages := (int(dbTotalItems) + request.Size - 1) / request.Size
+	response := model.NewResponse(todoResponses, &model.PageMetadata{
+		Page:       request.Page,
+		Size:       request.Size,
+		TotalItems: int(dbTotalItems),
+		TotalPages: totalPages,
+	})
+
+	return response, nil
+}
+
 func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllRequest) (*model.Response[[]*model.TodoResponse], error) {
 	if err := u.Validate.Struct(request); err != nil {
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))

@@ -8,6 +8,7 @@ type TodoHandler interface {
 	Create(ctx echo.Context) error
 	Update(ctx echo.Context) error
 	GetByID(ctx echo.Context) error
+	Search(ctx echo.Context) error
 	GetAll(ctx echo.Context) error
 	Delete(ctx echo.Context) error
 }

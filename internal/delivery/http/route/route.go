@@ -39,6 +39,7 @@ func (c *Config) protectedRoutes() {
 	g.Use(c.AuthMiddleware)
 	g.POST("/todo", c.TodoHandler.Create)
 	g.GET("/todo", c.TodoHandler.GetAll)
+	g.GET("/todo/search", c.TodoHandler.Search)
 	g.GET("/todo/:id", c.TodoHandler.GetByID)
 	g.PUT("/todo/:id", c.TodoHandler.Update)
 	g.DELETE("/todo/:id", c.TodoHandler.Delete)

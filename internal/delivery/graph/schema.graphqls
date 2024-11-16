@@ -35,6 +35,7 @@ input TodoUpdateInput {
 
 type Query {
     todo(id: ID!): Todo
+    searchTodos(title: String, page: Int = 1, size: Int = 10): TodoResponse!
     todos(page: Int = 1, size: Int = 10): TodoResponse!
 }
 

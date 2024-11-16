@@ -114,10 +114,10 @@ definitions:
     type: object
   model.TodoResponse:
     properties:
-      completed:
-        type: boolean
       created_at:
         type: string
+      done:
+        type: boolean
       id:
         type: string
       title:
@@ -127,7 +127,7 @@ definitions:
     type: object
   model.TodoUpdateRequest:
     properties:
-      completed:
+      done:
         type: boolean
       title:
         maxLength: 255
@@ -328,6 +328,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update todo
+      tags:
+      - todo
+  /todo/search:
+    get:
+      consumes:
+      - application/json
+      description: Search todo
+      parameters:
+      - description: Title
+        in: query
+        name: title
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response-array_model_TodoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response-any'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response-any'
+      security:
+      - ApiKeyAuth: []
+      summary: Search todo
       tags:
       - todo
   /users:

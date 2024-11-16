@@ -126,6 +126,67 @@ const docTemplate = `{
                 }
             }
         },
+        "/todo/search": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Search todo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "todo"
+                ],
+                "summary": "Search todo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Title",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response-array_model_TodoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response-any"
+                        }
+                    }
+                }
+            }
+        },
         "/todo/{id}": {
             "get": {
                 "security": [
@@ -588,11 +649,11 @@ const docTemplate = `{
         "model.TodoResponse": {
             "type": "object",
             "properties": {
-                "completed": {
-                    "type": "boolean"
-                },
                 "created_at": {
                     "type": "string"
+                },
+                "done": {
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "string"
@@ -608,7 +669,7 @@ const docTemplate = `{
         "model.TodoUpdateRequest": {
             "type": "object",
             "properties": {
-                "completed": {
+                "done": {
                     "type": "boolean"
                 },
                 "title": {

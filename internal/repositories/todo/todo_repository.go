@@ -9,5 +9,6 @@ import (
 type TodoRepository interface {
 	repositories.Repository[entity.Todo]
 	GetByID(db *gorm.DB, todo *entity.Todo, id string) error
+	GetByTitle(db *gorm.DB, todo *[]entity.Todo, title, userID string, page, size int) (int64, error)
 	GetAll(db *gorm.DB, todos *[]entity.Todo, userID string, page, size int) (int64, error)
 }

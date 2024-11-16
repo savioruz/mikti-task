@@ -29,6 +29,12 @@ type TodoGetRequest struct {
 	ID string `param:"id" validate:"required,uuid"`
 }
 
+type TodoSearchRequest struct {
+	Title string `query:"title" validate:"omitempty,gte=3,lte=255"`
+	Page  int    `query:"page" validate:"numeric"`
+	Size  int    `query:"size" validate:"numeric"`
+}
+
 type TodoGetAllRequest struct {
 	Page int `query:"page" validate:"numeric"`
 	Size int `query:"size" validate:"numeric"`
