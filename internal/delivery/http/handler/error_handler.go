@@ -13,6 +13,7 @@ var (
 	ErrorUnauthorized   = errors.New("unauthorized")
 	ErrorConflict       = errors.New("conflict")
 	ErrNotFound         = errors.New("not found")
+	ErrForbidden        = errors.New("forbidden")
 )
 
 func HandleError(c echo.Context, status int, err error) error {

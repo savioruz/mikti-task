@@ -152,6 +152,8 @@ func (h *TodoHandlerImpl) Delete(ctx echo.Context) error {
 			return handler.HandleError(ctx, http.StatusBadRequest, handler.ErrValidation)
 		case err.Error() == "Not Found":
 			return handler.HandleError(ctx, http.StatusNotFound, handler.ErrNotFound)
+		case err.Error() == "Forbidden":
+			return handler.HandleError(ctx, http.StatusForbidden, handler.ErrForbidden)
 		default:
 			return handler.HandleError(ctx, http.StatusInternalServerError, handler.ErrorInternalServer)
 		}

@@ -22,3 +22,15 @@ func TodosToResponses(todos []entity.Todo) []*model.TodoResponse {
 	}
 	return todoResponses
 }
+
+func TodosToPaginatedResponse(todos []entity.Todo, totalItems int64, page, size int) *model.Response[[]*model.TodoResponse] {
+	todoResponses := TodosToResponses(todos)
+	totalPages := (int(totalItems) + size - 1) / size
+
+	return model.NewResponse(todoResponses, &model.PageMetadata{
+		Page:       page,
+		Size:       size,
+		TotalItems: int(totalItems),
+		TotalPages: totalPages,
+	})
+}

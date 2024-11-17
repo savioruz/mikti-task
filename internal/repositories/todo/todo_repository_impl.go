@@ -2,6 +2,7 @@ package todo
 
 import (
 	"github.com/savioruz/mikti-task/internal/domain/entity"
+	"github.com/savioruz/mikti-task/internal/domain/model"
 	"github.com/savioruz/mikti-task/internal/repositories"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -23,54 +24,43 @@ func (r *TodoRepositoryImpl) GetByID(db *gorm.DB, todo *entity.Todo, id string) 
 	return db.Where("id = ?", id).Take(&todo).Error
 }
 
-func (r *TodoRepositoryImpl) GetByTitle(db *gorm.DB, todo *[]entity.Todo, title, userID string, page, size int) (int64, error) {
-	if page <= 0 {
-		page = 1
+func (r *TodoRepositoryImpl) GetPaginated(db *gorm.DB, todos *[]entity.Todo, opts model.TodoQueryOptions) (int64, error) {
+	if opts.Page <= 0 {
+		opts.Page = 1
 	}
-	if size <= 0 {
-		size = 10
+	if opts.Size <= 0 {
+		opts.Size = 10
 	}
 
-	offset := (page - 1) * size
+	query := r.buildPaginatedQuery(db, opts)
 
-	query := db.Model(&entity.Todo{}).Where("title LIKE ? AND user_id = ?", "%"+title+"%", userID)
-
+	// Get total count
 	var totalCount int64
-	countResult := query.Count(&totalCount)
-	if countResult.Error != nil {
-		return 0, countResult.Error
+	if err := query.Count(&totalCount).Error; err != nil {
+		return 0, err
 	}
 
-	result := query.Order("created_at DESC").Offset(offset).Limit(size).Find(&todo)
-	if result.Error != nil {
-		return 0, result.Error
+	// Get paginated results
+	offset := (opts.Page - 1) * opts.Size
+	if err := query.Offset(offset).Limit(opts.Size).Find(todos).Error; err != nil {
+		return 0, err
 	}
 
 	return totalCount, nil
 }
 
-func (r *TodoRepositoryImpl) GetAll(db *gorm.DB, todos *[]entity.Todo, userID string, page, size int) (int64, error) {
-	if page <= 0 {
-		page = 1
-	}
-	if size <= 0 {
-		size = 10
-	}
+func (r *TodoRepositoryImpl) buildPaginatedQuery(db *gorm.DB, opts model.TodoQueryOptions) *gorm.DB {
+	query := db.Model(&entity.Todo{})
 
-	offset := (page - 1) * size
-
-	query := db.Model(&entity.Todo{}).Where("user_id = ?", userID)
-
-	var totalCount int64
-	countResult := query.Count(&totalCount)
-	if countResult.Error != nil {
-		return 0, countResult.Error
+	// Add user filter only if not admin or if admin specified a userID
+	if !opts.IsAdmin || (opts.IsAdmin && opts.UserID != nil) {
+		query = query.Where("user_id = ?", opts.UserID)
 	}
 
-	result := query.Order("created_at DESC").Offset(offset).Limit(size).Find(todos)
-	if result.Error != nil {
-		return 0, result.Error
+	// Add title filter if provided
+	if opts.Title != nil && *opts.Title != "" {
+		query = query.Where("title LIKE ?", "%"+*opts.Title+"%")
 	}
 
-	return totalCount, nil
+	return query.Order("created_at DESC")
 }

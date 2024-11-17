@@ -39,3 +39,11 @@ type TodoGetAllRequest struct {
 	Page int `query:"page" validate:"numeric"`
 	Size int `query:"size" validate:"numeric"`
 }
+
+type TodoQueryOptions struct {
+	UserID  *string
+	Title   *string
+	Page    int
+	Size    int
+	IsAdmin bool
+}

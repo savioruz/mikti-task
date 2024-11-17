@@ -10,7 +10,7 @@ import (
 	"github.com/savioruz/mikti-task/internal/domain/model"
 	"github.com/savioruz/mikti-task/internal/domain/model/converter"
 	"github.com/savioruz/mikti-task/internal/platform/cache"
-	"github.com/savioruz/mikti-task/internal/platform/jwt"
+	"github.com/savioruz/mikti-task/internal/platform/helper"
 	"github.com/savioruz/mikti-task/internal/repositories/todo"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -24,6 +24,7 @@ type TodoUsecaseImpl struct {
 	Log            *logrus.Logger
 	Validate       *validator.Validate
 	TodoRepository todo.TodoRepository
+	helper         *helper.ContextHelper
 }
 
 func NewTodoUsecaseImpl(db *gorm.DB, c *cache.ImplCache, log *logrus.Logger, validate *validator.Validate, todoRepository todo.TodoRepository) *TodoUsecaseImpl {
@@ -33,6 +34,7 @@ func NewTodoUsecaseImpl(db *gorm.DB, c *cache.ImplCache, log *logrus.Logger, val
 		Log:            log,
 		Validate:       validate,
 		TodoRepository: todoRepository,
+		helper:         helper.NewContextHelper(),
 	}
 }
 
@@ -44,7 +46,7 @@ func (u *TodoUsecaseImpl) Create(ctx context.Context, request *model.TodoCreateR
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
-	claims, err := u.getJWTClaims(ctx)
+	claims, err := u.helper.GetJWTClaims(ctx)
 	if err != nil {
 		u.Log.Errorf("failed to get JWT claims: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusUnauthorized))
@@ -94,6 +96,11 @@ func (u *TodoUsecaseImpl) Update(ctx context.Context, id *model.TodoUpdateIDRequ
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
+	if err := u.helper.VerifyOwnership(ctx, todoData.UserID); err != nil {
+		u.Log.Errorf("unauthorized access attempt: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusForbidden))
+	}
+
 	if request.Title != nil {
 		todoData.Title = *request.Title
 	}
@@ -126,6 +133,11 @@ func (u *TodoUsecaseImpl) Delete(ctx context.Context, request *model.TodoDeleteR
 	if err := u.TodoRepository.GetByID(tx, todoData, request.ID); err != nil {
 		u.Log.Errorf("failed to get todo: %v", err)
 		return false, errors.New(http.StatusText(http.StatusNotFound))
+	}
+
+	if err := u.helper.VerifyOwnership(ctx, todoData.UserID); err != nil {
+		u.Log.Errorf("unauthorized access attempt: %v", err)
+		return false, errors.New(http.StatusText(http.StatusForbidden))
 	}
 
 	if err := u.TodoRepository.Delete(tx, todoData); err != nil {
@@ -166,6 +178,11 @@ func (u *TodoUsecaseImpl) Get(ctx context.Context, request *model.TodoGetRequest
 			return nil, errors.New(http.StatusText(http.StatusNotFound))
 		}
 
+		if err := u.helper.VerifyOwnership(ctx, todoData.UserID); err != nil {
+			u.Log.Errorf("unauthorized access attempt: %v", err)
+			return nil, errors.New(http.StatusText(http.StatusForbidden))
+		}
+
 		response := converter.TodoToResponse(todoData)
 
 		if err := u.Cache.Set(key, response, 5*time.Minute); err != nil {
@@ -181,10 +198,25 @@ func (u *TodoUsecaseImpl) Search(ctx context.Context, request *model.TodoSearchR
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
-	claims, err := u.getJWTClaims(ctx)
+	claims, err := u.helper.GetJWTClaims(ctx)
 	if err != nil {
 		u.Log.Errorf("failed to get JWT claims: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusUnauthorized))
+	}
+
+	isAdmin := u.helper.IsAdmin(ctx)
+	userID := claims.UserID
+
+	opts := model.TodoQueryOptions{
+		Page:    request.Page,
+		Size:    request.Size,
+		IsAdmin: isAdmin,
+		Title:   &request.Title,
+	}
+
+	// If not admin, always filter by user's ID
+	if !isAdmin {
+		opts.UserID = &userID
 	}
 
 	// Ensure valid pagination parameters
@@ -195,71 +227,31 @@ func (u *TodoUsecaseImpl) Search(ctx context.Context, request *model.TodoSearchR
 		request.Page = 1 // Default page number
 	}
 
-	// Cache keys for both data and metadata
-	dataKey := fmt.Sprintf("todos:user:%s:search:data:%s:%d:%d", claims.UserID, request.Title, request.Page, request.Size)
-	metadataKey := fmt.Sprintf("todos:user:%s:search:metadata:%s", claims.UserID, request.Title)
-
 	// Try to get cached data
-	var cachedData []*model.TodoResponse
-	err = u.Cache.Get(dataKey, &cachedData)
-	if err != nil && !errors.Is(err, cache.ErrCacheMiss) {
-		u.Log.Errorf("failed to get data from cache: %v", err)
+	cacheKey := u.helper.BuildCacheKey(opts)
+	var cachedResponse *model.Response[[]*model.TodoResponse]
+	if err := u.Cache.Get(cacheKey, &cachedResponse); err == nil {
+		return cachedResponse, nil
 	}
 
-	// Try to get cached metadata
-	var totalItems int
-	err = u.Cache.Get(metadataKey, &totalItems)
-	if err != nil && !errors.Is(err, cache.ErrCacheMiss) {
-		u.Log.Errorf("failed to get metadata from cache: %v", err)
-	}
-
-	// If we have both cached data and metadata, return them
-	if len(cachedData) > 0 && totalItems > 0 {
-		u.Log.Infof("Data retrieved from cache")
-		totalPages := (totalItems + request.Size - 1) / request.Size
-		response := model.NewResponse(cachedData, &model.PageMetadata{
-			Page:       request.Page,
-			Size:       request.Size,
-			TotalItems: totalItems,
-			TotalPages: totalPages,
-		})
-
-		return response, nil
-	}
-
-	// If cache miss, get data from database
-	tx := u.DB.WithContext(ctx).Begin()
-	defer tx.Rollback()
-
+	// If cache miss, get from database
 	var todos []entity.Todo
-	dbTotalItems, err := u.TodoRepository.GetByTitle(tx, &todos, request.Title, claims.UserID, request.Page, request.Size)
+	totalItems, err := u.TodoRepository.GetPaginated(u.DB, &todos, opts)
 	if err != nil {
-		u.Log.Errorf("failed to get todos from database: %v", err)
+		u.Log.Errorf("failed to get todos: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
+	}
+
+	if totalItems == 0 || len(todos) == 0 {
 		return nil, errors.New(http.StatusText(http.StatusNotFound))
 	}
 
-	if dbTotalItems == 0 || len(todos) == 0 {
-		return nil, errors.New(http.StatusText(http.StatusNotFound))
+	response := converter.TodosToPaginatedResponse(todos, totalItems, request.Page, request.Size)
+
+	// Cache the response
+	if err := u.Cache.Set(cacheKey, response, 5*time.Minute); err != nil {
+		u.Log.Errorf("failed to cache response: %v", err)
 	}
-
-	todoResponses := converter.TodosToResponses(todos)
-
-	// Cache both the data for this page and the total count
-	if err := u.Cache.Set(dataKey, todoResponses, 5*time.Minute); err != nil {
-		u.Log.Errorf("failed to set data to cache: %v", err)
-	}
-
-	if err := u.Cache.Set(metadataKey, int(dbTotalItems), 5*time.Minute); err != nil {
-		u.Log.Errorf("failed to set metadata to cache: %v", err)
-	}
-
-	totalPages := (int(dbTotalItems) + request.Size - 1) / request.Size
-	response := model.NewResponse(todoResponses, &model.PageMetadata{
-		Page:       request.Page,
-		Size:       request.Size,
-		TotalItems: int(dbTotalItems),
-		TotalPages: totalPages,
-	})
 
 	return response, nil
 }
@@ -269,10 +261,24 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 		return nil, errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
-	claims, err := u.getJWTClaims(ctx)
+	claims, err := u.helper.GetJWTClaims(ctx)
 	if err != nil {
 		u.Log.Errorf("failed to get JWT claims: %v", err)
 		return nil, errors.New(http.StatusText(http.StatusUnauthorized))
+	}
+
+	isAdmin := u.helper.IsAdmin(ctx)
+	userID := claims.UserID
+
+	opts := model.TodoQueryOptions{
+		Page:    request.Page,
+		Size:    request.Size,
+		IsAdmin: isAdmin,
+	}
+
+	// If not admin, always filter by user's ID
+	if !isAdmin {
+		opts.UserID = &userID
 	}
 
 	// Ensure valid pagination parameters
@@ -283,70 +289,31 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 		request.Page = 1 // Default page number
 	}
 
-	// Cache keys for both data and metadata
-	dataKey := fmt.Sprintf("todos:user:%s:list:data:%d:%d", claims.UserID, request.Page, request.Size)
-	metadataKey := fmt.Sprintf("todos:user:%s:list:metadata", claims.UserID)
-
 	// Try to get cached data
-	var cachedData []*model.TodoResponse
-	err = u.Cache.Get(dataKey, &cachedData)
-	if err != nil && !errors.Is(err, cache.ErrCacheMiss) {
-		u.Log.Errorf("failed to get data from cache: %v", err)
+	cacheKey := u.helper.BuildCacheKey(opts)
+	var cachedResponse *model.Response[[]*model.TodoResponse]
+	if err := u.Cache.Get(cacheKey, &cachedResponse); err == nil {
+		return cachedResponse, nil
 	}
 
-	// Try to get cached metadata
-	var totalItems int
-	err = u.Cache.Get(metadataKey, &totalItems)
-	if err != nil && !errors.Is(err, cache.ErrCacheMiss) {
-		u.Log.Errorf("failed to get metadata from cache: %v", err)
-	}
-
-	// If we have both cached data and metadata, return them
-	if len(cachedData) > 0 && totalItems > 0 {
-		u.Log.Infof("Data retrieved from cache")
-		totalPages := (totalItems + request.Size - 1) / request.Size
-		response := model.NewResponse(cachedData, &model.PageMetadata{
-			Page:       request.Page,
-			Size:       request.Size,
-			TotalItems: totalItems,
-			TotalPages: totalPages,
-		})
-
-		return response, nil
-	}
-
-	// If cache miss, get data from database
-	tx := u.DB.WithContext(ctx).Begin()
-	defer tx.Rollback()
-
+	// If cache miss, get from database
 	var todos []entity.Todo
-	dbTotalItems, err := u.TodoRepository.GetAll(tx, &todos, claims.UserID, request.Page, request.Size)
+	totalItems, err := u.TodoRepository.GetPaginated(u.DB, &todos, opts)
 	if err != nil {
-		u.Log.Errorf("failed to get todos from database: %v", err)
+		u.Log.Errorf("failed to get todos: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
+	}
+
+	if totalItems == 0 || len(todos) == 0 {
 		return nil, errors.New(http.StatusText(http.StatusNotFound))
 	}
 
-	if dbTotalItems == 0 || len(todos) == 0 {
-		return nil, errors.New(http.StatusText(http.StatusNotFound))
-	}
+	response := converter.TodosToPaginatedResponse(todos, totalItems, request.Page, request.Size)
 
-	todoResponses := converter.TodosToResponses(todos)
-
-	// Cache both the data for this page and the total count
-	if err := u.Cache.Set(dataKey, todoResponses, 5*time.Minute); err != nil {
-		u.Log.Errorf("failed to set data to cache: %v", err)
+	// Cache the response
+	if err := u.Cache.Set(cacheKey, response, 5*time.Minute); err != nil {
+		u.Log.Errorf("failed to cache response: %v", err)
 	}
-	if err := u.Cache.Set(metadataKey, int(dbTotalItems), 5*time.Minute); err != nil {
-		u.Log.Errorf("failed to set metadata to cache: %v", err)
-	}
-
-	totalPages := (int(dbTotalItems) + request.Size - 1) / request.Size
-	response := model.NewResponse(todoResponses, &model.PageMetadata{
-		Page:       request.Page,
-		Size:       request.Size,
-		TotalItems: int(dbTotalItems),
-		TotalPages: totalPages,
-	})
 
 	return response, nil
 }
@@ -360,12 +327,4 @@ func (u *TodoUsecaseImpl) invalidateUserListCache(userID string) {
 	if err := u.Cache.DeletePattern(pattern); err != nil {
 		u.Log.Errorf("failed to delete user data caches: %v", err)
 	}
-}
-
-func (u *TodoUsecaseImpl) getJWTClaims(ctx context.Context) (*jwt.JWTClaims, error) {
-	claims, ok := ctx.Value("claims").(*jwt.JWTClaims)
-	if !ok || claims == nil {
-		return nil, errors.New("unauthorized: invalid or missing JWT claims")
-	}
-	return claims, nil
 }
