@@ -1,11 +1,12 @@
 package model
 
 type TodoResponse struct {
-	ID        string `json:"id"`
-	Title     string `json:"title"`
-	Done      bool   `json:"done"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	ID        string  `json:"id"`
+	UserID    *string `json:"user_id,omitempty"`
+	Title     string  `json:"title"`
+	Done      bool    `json:"done"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
 }
 
 type TodoCreateRequest struct {
@@ -30,7 +31,7 @@ type TodoGetRequest struct {
 }
 
 type TodoSearchRequest struct {
-	Title string `query:"title" validate:"omitempty,gte=3,lte=255"`
+	Title string `query:"title" validate:"omitempty,gte=2,lte=255"`
 	Page  int    `query:"page" validate:"numeric"`
 	Size  int    `query:"size" validate:"numeric"`
 }

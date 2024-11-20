@@ -48,16 +48,17 @@ func (u *UserUsecaseImpl) Create(ctx context.Context, request *model.RegisterReq
 		return nil, errors.New(http.StatusText(http.StatusConflict))
 	}
 
-	if request.Role == "admin" {
-		count, err := u.UserRepository.CountByRole(tx, request.Role)
-		if err != nil {
-			u.Log.Errorf("failed to count user by role: %v", err)
-			return nil, errors.New(http.StatusText(http.StatusInternalServerError))
-		}
-		if count > 0 {
-			u.Log.Errorf("admin already exists")
-			return nil, errors.New(http.StatusText(http.StatusConflict))
-		}
+	first := &entity.User{}
+	if err := u.UserRepository.GetFirst(tx, first); err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		u.Log.Errorf("failed to get first user: %v", err)
+		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
+	}
+
+	var role string
+	if first.ID == "" {
+		role = "admin"
+	} else {
+		role = "user"
 	}
 
 	password, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
@@ -70,7 +71,7 @@ func (u *UserUsecaseImpl) Create(ctx context.Context, request *model.RegisterReq
 		ID:       uuid.New().String(),
 		Email:    request.Email,
 		Password: string(password),
-		Role:     request.Role,
+		Role:     role,
 		Status:   true,
 	}
 

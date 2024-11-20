@@ -71,7 +71,7 @@ func (u *TodoUsecaseImpl) Create(ctx context.Context, request *model.TodoCreateR
 
 	u.invalidateUserListCache(claims.UserID)
 
-	return converter.TodoToResponse(todoData), nil
+	return converter.TodoToResponse(todoData, false), nil
 }
 
 func (u *TodoUsecaseImpl) Update(ctx context.Context, id *model.TodoUpdateIDRequest, request *model.TodoUpdateRequest) (*model.TodoResponse, error) {
@@ -118,7 +118,7 @@ func (u *TodoUsecaseImpl) Update(ctx context.Context, id *model.TodoUpdateIDRequ
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
-	return converter.TodoToResponse(todoData), nil
+	return converter.TodoToResponse(todoData, false), nil
 }
 
 func (u *TodoUsecaseImpl) Delete(ctx context.Context, request *model.TodoDeleteRequest) (bool, error) {
@@ -165,10 +165,9 @@ func (u *TodoUsecaseImpl) Get(ctx context.Context, request *model.TodoGetRequest
 		u.Log.Errorf("failed to get data from cache: %v", err)
 	}
 
-	if data != nil {
-		u.Log.Infof("data from cache: %v", data)
-		return data, nil
-	} else {
+	isAdmin := u.helper.IsAdmin(ctx)
+
+	if data == nil {
 		tx := u.DB.WithContext(ctx).Begin()
 		defer tx.Rollback()
 
@@ -183,7 +182,7 @@ func (u *TodoUsecaseImpl) Get(ctx context.Context, request *model.TodoGetRequest
 			return nil, errors.New(http.StatusText(http.StatusForbidden))
 		}
 
-		response := converter.TodoToResponse(todoData)
+		response := converter.TodoToResponse(todoData, isAdmin)
 
 		if err := u.Cache.Set(key, response, 5*time.Minute); err != nil {
 			u.Log.Errorf("failed to set data to cache: %v", err)
@@ -191,6 +190,8 @@ func (u *TodoUsecaseImpl) Get(ctx context.Context, request *model.TodoGetRequest
 
 		return response, nil
 	}
+
+	return data, nil
 }
 
 func (u *TodoUsecaseImpl) Search(ctx context.Context, request *model.TodoSearchRequest) (*model.Response[[]*model.TodoResponse], error) {
@@ -246,7 +247,7 @@ func (u *TodoUsecaseImpl) Search(ctx context.Context, request *model.TodoSearchR
 		return nil, errors.New(http.StatusText(http.StatusNotFound))
 	}
 
-	response := converter.TodosToPaginatedResponse(todos, totalItems, request.Page, request.Size)
+	response := converter.TodosToPaginatedResponse(todos, totalItems, request.Page, request.Size, isAdmin)
 
 	// Cache the response
 	if err := u.Cache.Set(cacheKey, response, 5*time.Minute); err != nil {
@@ -308,7 +309,7 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 		return nil, errors.New(http.StatusText(http.StatusNotFound))
 	}
 
-	response := converter.TodosToPaginatedResponse(todos, totalItems, request.Page, request.Size)
+	response := converter.TodosToPaginatedResponse(todos, totalItems, request.Page, request.Size, isAdmin)
 
 	// Cache the response
 	if err := u.Cache.Set(cacheKey, response, 5*time.Minute); err != nil {

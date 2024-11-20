@@ -59,19 +59,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-array_model_TodoResponse"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-array_github_com_savioruz_mikti-task_internal_domain_model_TodoResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     }
                 }
@@ -100,7 +100,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.TodoCreateRequest"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.TodoCreateRequest"
                         }
                     }
                 ],
@@ -108,19 +108,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-model_TodoResponse"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_TodoResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     }
                 }
@@ -169,19 +169,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-array_model_TodoResponse"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-array_github_com_savioruz_mikti-task_internal_domain_model_TodoResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     }
                 }
@@ -218,19 +218,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-model_TodoResponse"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_TodoResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     }
                 }
@@ -266,7 +266,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.TodoUpdateRequest"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.TodoUpdateRequest"
                         }
                     }
                 ],
@@ -274,19 +274,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-model_TodoResponse"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_TodoResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     }
                 }
@@ -321,19 +321,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-model_TodoResponse"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_TodoResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     }
                 }
@@ -359,7 +359,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.RegisterRequest"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.RegisterRequest"
                         }
                     }
                 ],
@@ -367,19 +367,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-model_UserResponse"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
                         }
                     }
                 }
@@ -405,7 +405,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.LoginRequest"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.LoginRequest"
                         }
                     }
                 ],
@@ -413,19 +413,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-model_UserResponse"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_UserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
                         }
                     }
                 }
@@ -451,7 +451,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.RefreshTokenRequest"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -459,19 +459,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-model_TokenResponse"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_TokenResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
                         }
                     }
                 }
@@ -479,7 +479,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "model.Error": {
+        "github_com_savioruz_mikti-task_internal_domain_model.Error": {
             "type": "object",
             "properties": {
                 "code": {
@@ -490,7 +490,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.LoginRequest": {
+        "github_com_savioruz_mikti-task_internal_domain_model.LoginRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -508,7 +508,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.PageMetadata": {
+        "github_com_savioruz_mikti-task_internal_domain_model.PageMetadata": {
             "type": "object",
             "properties": {
                 "page": {
@@ -525,7 +525,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RefreshTokenRequest": {
+        "github_com_savioruz_mikti-task_internal_domain_model.RefreshTokenRequest": {
             "type": "object",
             "required": [
                 "refresh_token"
@@ -536,7 +536,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RegisterRequest": {
+        "github_com_savioruz_mikti-task_internal_domain_model.RegisterRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -562,78 +562,78 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Response-any": {
+        "github_com_savioruz_mikti-task_internal_domain_model.Response-any": {
             "type": "object",
             "properties": {
                 "data": {},
                 "error": {
-                    "$ref": "#/definitions/model.Error"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                 },
                 "paging": {
-                    "$ref": "#/definitions/model.PageMetadata"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.PageMetadata"
                 }
             }
         },
-        "model.Response-array_model_TodoResponse": {
+        "github_com_savioruz_mikti-task_internal_domain_model.Response-array_github_com_savioruz_mikti-task_internal_domain_model_TodoResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.TodoResponse"
+                        "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.TodoResponse"
                     }
                 },
                 "error": {
-                    "$ref": "#/definitions/model.Error"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                 },
                 "paging": {
-                    "$ref": "#/definitions/model.PageMetadata"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.PageMetadata"
                 }
             }
         },
-        "model.Response-model_TodoResponse": {
+        "github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_TodoResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.TodoResponse"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.TodoResponse"
                 },
                 "error": {
-                    "$ref": "#/definitions/model.Error"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                 },
                 "paging": {
-                    "$ref": "#/definitions/model.PageMetadata"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.PageMetadata"
                 }
             }
         },
-        "model.Response-model_TokenResponse": {
+        "github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_TokenResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.TokenResponse"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.TokenResponse"
                 },
                 "error": {
-                    "$ref": "#/definitions/model.Error"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                 },
                 "paging": {
-                    "$ref": "#/definitions/model.PageMetadata"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.PageMetadata"
                 }
             }
         },
-        "model.Response-model_UserResponse": {
+        "github_com_savioruz_mikti-task_internal_domain_model.Response-github_com_savioruz_mikti-task_internal_domain_model_UserResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.UserResponse"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.UserResponse"
                 },
                 "error": {
-                    "$ref": "#/definitions/model.Error"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                 },
                 "paging": {
-                    "$ref": "#/definitions/model.PageMetadata"
+                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.PageMetadata"
                 }
             }
         },
-        "model.TodoCreateRequest": {
+        "github_com_savioruz_mikti-task_internal_domain_model.TodoCreateRequest": {
             "type": "object",
             "required": [
                 "title"
@@ -646,7 +646,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.TodoResponse": {
+        "github_com_savioruz_mikti-task_internal_domain_model.TodoResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -663,10 +663,13 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
-        "model.TodoUpdateRequest": {
+        "github_com_savioruz_mikti-task_internal_domain_model.TodoUpdateRequest": {
             "type": "object",
             "properties": {
                 "done": {
@@ -679,7 +682,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.TokenResponse": {
+        "github_com_savioruz_mikti-task_internal_domain_model.TokenResponse": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -690,7 +693,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UserResponse": {
+        "github_com_savioruz_mikti-task_internal_domain_model.UserResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
