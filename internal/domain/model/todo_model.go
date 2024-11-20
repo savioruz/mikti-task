@@ -31,14 +31,18 @@ type TodoGetRequest struct {
 }
 
 type TodoSearchRequest struct {
-	Title string `query:"title" validate:"omitempty,gte=2,lte=255"`
-	Page  int    `query:"page" validate:"numeric"`
-	Size  int    `query:"size" validate:"numeric"`
+	Title string  `query:"title" validate:"omitempty,gte=2,lte=255"`
+	Page  int     `query:"page" validate:"numeric"`
+	Size  int     `query:"size" validate:"numeric"`
+	Sort  *string `query:"sort" validate:"omitempty,oneof='id' title done created_at updated_at"`
+	Order *string `query:"order" validate:"omitempty,oneof=asc desc"`
 }
 
 type TodoGetAllRequest struct {
-	Page int `query:"page" validate:"numeric"`
-	Size int `query:"size" validate:"numeric"`
+	Page  int     `query:"page" validate:"numeric"`
+	Size  int     `query:"size" validate:"numeric"`
+	Sort  *string `query:"sort" validate:"omitempty,oneof=id title done created_at updated_at"`
+	Order *string `query:"order" validate:"omitempty,oneof=asc desc"`
 }
 
 type TodoQueryOptions struct {
@@ -46,5 +50,7 @@ type TodoQueryOptions struct {
 	Title   *string
 	Page    int
 	Size    int
+	Sort    string
+	Order   string
 	IsAdmin bool
 }

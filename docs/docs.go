@@ -53,6 +53,18 @@ const docTemplate = `{
                         "description": "Page",
                         "name": "page",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Order",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -162,6 +174,18 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Size",
                         "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Order",
+                        "name": "order",
                         "in": "query"
                     }
                 ],

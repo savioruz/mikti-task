@@ -228,6 +228,12 @@ func (u *TodoUsecaseImpl) Search(ctx context.Context, request *model.TodoSearchR
 		request.Page = 1 // Default page number
 	}
 
+	// Ensure sort parameter
+	if request.Sort != nil && request.Order != nil {
+		opts.Sort = *request.Sort
+		opts.Order = *request.Order
+	}
+
 	// Try to get cached data
 	cacheKey := u.helper.BuildCacheKey(opts)
 	var cachedResponse *model.Response[[]*model.TodoResponse]
@@ -288,6 +294,12 @@ func (u *TodoUsecaseImpl) GetAll(ctx context.Context, request *model.TodoGetAllR
 	}
 	if request.Page <= 0 {
 		request.Page = 1 // Default page number
+	}
+
+	// Ensure sort parameter
+	if request.Sort != nil && request.Order != nil {
+		opts.Sort = *request.Sort
+		opts.Order = *request.Order
 	}
 
 	// Try to get cached data

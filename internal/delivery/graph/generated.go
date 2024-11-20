@@ -67,9 +67,9 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		SearchTodos func(childComplexity int, title *string, page *int, size *int) int
+		SearchTodos func(childComplexity int, title *string, page *int, size *int, sort *string, order *string) int
 		Todo        func(childComplexity int, id string) int
-		Todos       func(childComplexity int, page *int, size *int) int
+		Todos       func(childComplexity int, page *int, size *int, sort *string, order *string) int
 	}
 
 	Todo struct {
@@ -95,8 +95,8 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Todo(ctx context.Context, id string) (*model.TodoResponse, error)
-	SearchTodos(ctx context.Context, title *string, page *int, size *int) (*graphmodel.TodoResponse, error)
-	Todos(ctx context.Context, page *int, size *int) (*graphmodel.TodoResponse, error)
+	SearchTodos(ctx context.Context, title *string, page *int, size *int, sort *string, order *string) (*graphmodel.TodoResponse, error)
+	Todos(ctx context.Context, page *int, size *int, sort *string, order *string) (*graphmodel.TodoResponse, error)
 }
 
 type executableSchema struct {
@@ -206,7 +206,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.SearchTodos(childComplexity, args["title"].(*string), args["page"].(*int), args["size"].(*int)), true
+		return e.complexity.Query.SearchTodos(childComplexity, args["title"].(*string), args["page"].(*int), args["size"].(*int), args["sort"].(*string), args["order"].(*string)), true
 
 	case "Query.todo":
 		if e.complexity.Query.Todo == nil {
@@ -230,7 +230,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Todos(childComplexity, args["page"].(*int), args["size"].(*int)), true
+		return e.complexity.Query.Todos(childComplexity, args["page"].(*int), args["size"].(*int), args["sort"].(*string), args["order"].(*string)), true
 
 	case "Todo.createdAt":
 		if e.complexity.Todo.CreatedAt == nil {
@@ -548,6 +548,16 @@ func (ec *executionContext) field_Query_searchTodos_args(ctx context.Context, ra
 		return nil, err
 	}
 	args["size"] = arg2
+	arg3, err := ec.field_Query_searchTodos_argsSort(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["sort"] = arg3
+	arg4, err := ec.field_Query_searchTodos_argsOrder(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["order"] = arg4
 	return args, nil
 }
 func (ec *executionContext) field_Query_searchTodos_argsTitle(
@@ -589,6 +599,32 @@ func (ec *executionContext) field_Query_searchTodos_argsSize(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Query_searchTodos_argsSort(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (*string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+	if tmp, ok := rawArgs["sort"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_searchTodos_argsOrder(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (*string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("order"))
+	if tmp, ok := rawArgs["order"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Query_todo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -625,6 +661,16 @@ func (ec *executionContext) field_Query_todos_args(ctx context.Context, rawArgs 
 		return nil, err
 	}
 	args["size"] = arg1
+	arg2, err := ec.field_Query_todos_argsSort(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["sort"] = arg2
+	arg3, err := ec.field_Query_todos_argsOrder(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["order"] = arg3
 	return args, nil
 }
 func (ec *executionContext) field_Query_todos_argsPage(
@@ -650,6 +696,32 @@ func (ec *executionContext) field_Query_todos_argsSize(
 	}
 
 	var zeroVal *int
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_todos_argsSort(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (*string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+	if tmp, ok := rawArgs["sort"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_todos_argsOrder(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (*string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("order"))
+	if tmp, ok := rawArgs["order"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
 	return zeroVal, nil
 }
 
@@ -1244,7 +1316,7 @@ func (ec *executionContext) _Query_searchTodos(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().SearchTodos(rctx, fc.Args["title"].(*string), fc.Args["page"].(*int), fc.Args["size"].(*int))
+		return ec.resolvers.Query().SearchTodos(rctx, fc.Args["title"].(*string), fc.Args["page"].(*int), fc.Args["size"].(*int), fc.Args["sort"].(*string), fc.Args["order"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1307,7 +1379,7 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Todos(rctx, fc.Args["page"].(*int), fc.Args["size"].(*int))
+		return ec.resolvers.Query().Todos(rctx, fc.Args["page"].(*int), fc.Args["size"].(*int), fc.Args["sort"].(*string), fc.Args["order"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

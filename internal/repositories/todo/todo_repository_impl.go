@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"fmt"
 	"github.com/savioruz/mikti-task/internal/domain/entity"
 	"github.com/savioruz/mikti-task/internal/domain/model"
 	"github.com/savioruz/mikti-task/internal/repositories"
@@ -62,5 +63,13 @@ func (r *TodoRepositoryImpl) buildPaginatedQuery(db *gorm.DB, opts model.TodoQue
 		query = query.Where("title LIKE ?", "%"+*opts.Title+"%")
 	}
 
-	return query.Order("created_at DESC")
+	// Add sorting
+	if opts.Sort != "" && opts.Order != "" {
+		sort := fmt.Sprintf("%s %s", opts.Sort, opts.Order)
+		query = query.Order(sort)
+	} else {
+		query = query.Order("created_at DESC")
+	}
+
+	return query
 }

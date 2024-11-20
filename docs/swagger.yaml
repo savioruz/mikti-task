@@ -170,6 +170,14 @@ paths:
         in: query
         name: page
         type: integer
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      - description: Order
+        in: query
+        name: order
+        type: string
       produces:
       - application/json
       responses:
@@ -337,6 +345,14 @@ paths:
         in: query
         name: size
         type: integer
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      - description: Order
+        in: query
+        name: order
+        type: string
       produces:
       - application/json
       responses:

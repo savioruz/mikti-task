@@ -170,6 +170,8 @@ func (h *TodoHandlerImpl) Delete(ctx echo.Context) error {
 // @Produce json
 // @Param limit query int false "Limit"
 // @Param page query int false "Page"
+// @Param sort query string false "Sort"
+// @Param order query string false "Order"
 // @Success 200 {object} model.Response[[]model.TodoResponse]
 // @Failure 400 {object} model.Error
 // @Failure 500 {object} model.Error
@@ -207,6 +209,8 @@ func (h *TodoHandlerImpl) GetAll(ctx echo.Context) error {
 // @Param title query string true "Title"
 // @Param page query int false "Page"
 // @Param size query int false "Size"
+// @Param sort query string false "Sort"
+// @Param order query string false "Order"
 // @Success 200 {object} model.Response[[]model.TodoResponse]
 // @Failure 400 {object} model.Error
 // @Failure 500 {object} model.Error

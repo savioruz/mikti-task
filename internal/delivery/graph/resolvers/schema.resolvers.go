@@ -43,7 +43,7 @@ func (r *queryResolver) Todo(ctx context.Context, id string) (*model.TodoRespons
 }
 
 // SearchTodos is the resolver for the searchTodos field.
-func (r *queryResolver) SearchTodos(ctx context.Context, title *string, page *int, size *int) (*graphmodel.TodoResponse, error) {
+func (r *queryResolver) SearchTodos(ctx context.Context, title *string, page *int, size *int, sort *string, order *string) (*graphmodel.TodoResponse, error) {
 	var paginated *model.Response[[]*model.TodoResponse]
 	var err error
 	if page != nil && size != nil {
@@ -51,12 +51,16 @@ func (r *queryResolver) SearchTodos(ctx context.Context, title *string, page *in
 			Title: *title,
 			Page:  *page,
 			Size:  *size,
+			Sort:  sort,
+			Order: order,
 		})
 	} else {
 		paginated, err = r.TodoUsecase.Search(ctx, &model.TodoSearchRequest{
 			Title: *title,
 			Page:  1,
 			Size:  10,
+			Sort:  sort,
+			Order: order,
 		})
 	}
 
@@ -76,18 +80,22 @@ func (r *queryResolver) SearchTodos(ctx context.Context, title *string, page *in
 }
 
 // Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context, page *int, size *int) (*graphmodel.TodoResponse, error) {
+func (r *queryResolver) Todos(ctx context.Context, page *int, size *int, sort *string, order *string) (*graphmodel.TodoResponse, error) {
 	var paginated *model.Response[[]*model.TodoResponse]
 	var err error
 	if page != nil && size != nil {
 		paginated, err = r.TodoUsecase.GetAll(ctx, &model.TodoGetAllRequest{
-			Page: *page,
-			Size: *size,
+			Page:  *page,
+			Size:  *size,
+			Sort:  sort,
+			Order: order,
 		})
 	} else {
 		paginated, err = r.TodoUsecase.GetAll(ctx, &model.TodoGetAllRequest{
-			Page: 1,
-			Size: 10,
+			Page:  1,
+			Size:  10,
+			Sort:  sort,
+			Order: order,
 		})
 	}
 
