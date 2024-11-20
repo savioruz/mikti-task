@@ -4,6 +4,9 @@ APP_VERSION = 0.0.1
 clean:
 	rm -rf ./build
 
+swag:
+	swag init --parseDependency --parseInternal -g ./cmd/app/main.go
+
 critic:
 	gocritic check -enableAll ./internal/...
 

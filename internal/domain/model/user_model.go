@@ -12,7 +12,6 @@ type UserResponse struct {
 type RegisterRequest struct {
 	Email    string `json:"email" validate:"required,email,lte=100"`
 	Password string `json:"password" validate:"required,gte=8,lte=255"`
-	Role     string `json:"role" validate:"required,oneof=admin user"`
 }
 
 type LoginRequest struct {

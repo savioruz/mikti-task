@@ -29,8 +29,8 @@ func NewTodoHandlerImpl(log *logrus.Logger, t todo.TodoUsecase) *TodoHandlerImpl
 // @Produce json
 // @Param todo body model.TodoCreateRequest true "Todo data"
 // @Success 201 {object} model.Response[model.TodoResponse]
-// @Failure 400 {object} model.Response[any]
-// @Failure 500 {object} model.Response[any]
+// @Failure 400 {object} model.Error
+// @Failure 500 {object} model.Error
 // @security ApiKeyAuth
 // @Router /todo [post]
 func (h *TodoHandlerImpl) Create(ctx echo.Context) error {
@@ -61,8 +61,8 @@ func (h *TodoHandlerImpl) Create(ctx echo.Context) error {
 // @Produce json
 // @Param id path string true "Todo ID"
 // @Success 200 {object} model.Response[model.TodoResponse]
-// @Failure 400 {object} model.Response[any]
-// @Failure 500 {object} model.Response[any]
+// @Failure 400 {object} model.Error
+// @Failure 500 {object} model.Error
 // @security ApiKeyAuth
 // @Router /todo/{id} [get]
 func (h *TodoHandlerImpl) GetByID(ctx echo.Context) error {
@@ -97,8 +97,8 @@ func (h *TodoHandlerImpl) GetByID(ctx echo.Context) error {
 // @Param id path string true "Todo ID"
 // @Param todo body model.TodoUpdateRequest true "Todo data"
 // @Success 200 {object} model.Response[model.TodoResponse]
-// @Failure 400 {object} model.Response[any]
-// @Failure 500 {object} model.Response[any]
+// @Failure 400 {object} model.Error
+// @Failure 500 {object} model.Error
 // @security ApiKeyAuth
 // @Router /todo/{id} [put]
 func (h *TodoHandlerImpl) Update(ctx echo.Context) error {
@@ -133,8 +133,8 @@ func (h *TodoHandlerImpl) Update(ctx echo.Context) error {
 // @Produce json
 // @Param id path string true "Todo ID"
 // @Success 200 {object} model.Response[model.TodoResponse]
-// @Failure 400 {object} model.Response[any]
-// @Failure 500 {object} model.Response[any]
+// @Failure 400 {object} model.Error
+// @Failure 500 {object} model.Error
 // @security ApiKeyAuth
 // @Router /todo/{id} [delete]
 func (h *TodoHandlerImpl) Delete(ctx echo.Context) error {
@@ -171,8 +171,8 @@ func (h *TodoHandlerImpl) Delete(ctx echo.Context) error {
 // @Param limit query int false "Limit"
 // @Param page query int false "Page"
 // @Success 200 {object} model.Response[[]model.TodoResponse]
-// @Failure 400 {object} model.Response[any]
-// @Failure 500 {object} model.Response[any]
+// @Failure 400 {object} model.Error
+// @Failure 500 {object} model.Error
 // @security ApiKeyAuth
 // @Router /todo [get]
 func (h *TodoHandlerImpl) GetAll(ctx echo.Context) error {
@@ -208,8 +208,8 @@ func (h *TodoHandlerImpl) GetAll(ctx echo.Context) error {
 // @Param page query int false "Page"
 // @Param size query int false "Size"
 // @Success 200 {object} model.Response[[]model.TodoResponse]
-// @Failure 400 {object} model.Response[any]
-// @Failure 500 {object} model.Response[any]
+// @Failure 400 {object} model.Error
+// @Failure 500 {object} model.Error
 // @security ApiKeyAuth
 // @Router /todo/search [get]
 func (h *TodoHandlerImpl) Search(ctx echo.Context) error {
