@@ -373,13 +373,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     }
                 }
@@ -419,13 +419,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     }
                 }
@@ -465,13 +465,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any"
+                            "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
                         }
                     }
                 }
@@ -540,8 +540,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "email",
-                "password",
-                "role"
+                "password"
             ],
             "properties": {
                 "email": {
@@ -552,25 +551,6 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 8
-                },
-                "role": {
-                    "type": "string",
-                    "enum": [
-                        "admin",
-                        "user"
-                    ]
-                }
-            }
-        },
-        "github_com_savioruz_mikti-task_internal_domain_model.Response-any": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "error": {
-                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error"
-                },
-                "paging": {
-                    "$ref": "#/definitions/github_com_savioruz_mikti-task_internal_domain_model.PageMetadata"
                 }
             }
         },

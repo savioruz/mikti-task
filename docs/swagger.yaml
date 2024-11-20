@@ -47,23 +47,9 @@ definitions:
         maxLength: 255
         minLength: 8
         type: string
-      role:
-        enum:
-        - admin
-        - user
-        type: string
     required:
     - email
     - password
-    - role
-    type: object
-  github_com_savioruz_mikti-task_internal_domain_model.Response-any:
-    properties:
-      data: {}
-      error:
-        $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error'
-      paging:
-        $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.PageMetadata'
     type: object
   ? github_com_savioruz_mikti-task_internal_domain_model.Response-array_github_com_savioruz_mikti-task_internal_domain_model_TodoResponse
   : properties:
@@ -393,11 +379,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any'
+            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any'
+            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error'
       summary: Register a new user
       tags:
       - user
@@ -423,11 +409,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any'
+            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any'
+            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error'
       summary: Login a user
       tags:
       - user
@@ -453,11 +439,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any'
+            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Response-any'
+            $ref: '#/definitions/github_com_savioruz_mikti-task_internal_domain_model.Error'
       summary: Refresh token
       tags:
       - user

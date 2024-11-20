@@ -29,8 +29,8 @@ func NewUserHandlerImpl(log *logrus.Logger, u user.UserUsecase) *UserHandlerImpl
 // @Produce json
 // @Param user body model.RegisterRequest true "User data"
 // @Success 201 {object} model.Response[model.UserResponse]
-// @Failure 400 {object} model.Response[any]
-// @Failure 500 {object} model.Response[any]
+// @Failure 400 {object} model.Error
+// @Failure 500 {object} model.Error
 // @Router /users [post]
 func (h *UserHandlerImpl) Register(ctx echo.Context) error {
 	request := new(model.RegisterRequest)
@@ -63,8 +63,8 @@ func (h *UserHandlerImpl) Register(ctx echo.Context) error {
 // @Produce json
 // @Param user body model.LoginRequest true "User data"
 // @Success 200 {object} model.Response[model.UserResponse]
-// @Failure 400 {object} model.Response[any]
-// @Failure 500 {object} model.Response[any]
+// @Failure 400 {object} model.Error
+// @Failure 500 {object} model.Error
 // @Router /users/login [post]
 func (h *UserHandlerImpl) Login(ctx echo.Context) error {
 	request := new(model.LoginRequest)
@@ -97,8 +97,8 @@ func (h *UserHandlerImpl) Login(ctx echo.Context) error {
 // @Produce json
 // @Param token body model.RefreshTokenRequest true "Refresh token data"
 // @Success 200 {object} model.Response[model.TokenResponse]
-// @Failure 400 {object} model.Response[any]
-// @Failure 500 {object} model.Response[any]
+// @Failure 400 {object} model.Error
+// @Failure 500 {object} model.Error
 // @Router /users/refresh [post]
 func (h *UserHandlerImpl) Refresh(ctx echo.Context) error {
 	request := new(model.RefreshTokenRequest)
